@@ -102,3 +102,17 @@ Thumbs.db
 
 *.tmp
 *.temp
+
+# ============================================================
+# Generated project outputs
+# ============================================================
+
+outputs/
+reports/generated/
+
+# Excel temporary files
+~$*.xlsx
+~$*.xls
+
+# R Markdown generated files
+*_files/
