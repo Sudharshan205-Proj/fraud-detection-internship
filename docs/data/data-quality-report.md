@@ -116,7 +116,19 @@ The dataset is suitable for the internship project because it:
 
 The dataset is therefore suitable to proceed to the data-processing stage.
 
-## 13. Current Status
+## 13. ROCCC Assessment
+
+| Principle | Initial Assessment |
+|---|---|
+| Reliability | Suitable for educational analysis; dataset structure and variables are clearly defined |
+| Originality | PaySim is a synthetic dataset created for financial transaction simulation and fraud research |
+| Comprehensiveness | Contains 6,362,620 transactions and 11 variables covering transaction, account, balance, time, and fraud information |
+| Currency | The dataset represents a simulated transaction environment rather than continuously updated real-world financial data |
+| Citation | Dataset provenance and source will be documented in the project references |
+
+The ROCCC assessment indicates that the dataset is suitable for the intended educational and analytical purpose, while its synthetic nature must be considered when interpreting results.
+
+## 14. Current Status
 
 **Initial data-quality assessment: Complete**
 
