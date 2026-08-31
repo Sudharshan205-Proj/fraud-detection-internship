@@ -192,3 +192,39 @@ def test_random_forest_creation():
 
     assert model.n_estimators == 100
     assert model.class_weight == "balanced"
+
+
+def test_model_results_contain_required_metrics():
+    required_metrics = {
+        "accuracy",
+        "precision",
+        "recall",
+        "f1_score",
+        "roc_auc",
+    }
+
+    logistic_results = {
+        "accuracy": 0.967201,
+        "precision": 0.034137,
+        "recall": 0.894096,
+        "f1_score": 0.065762,
+        "roc_auc": 0.984229,
+    }
+
+    random_forest_results = {
+        "accuracy": 0.999995,
+        "precision": 0.998781,
+        "recall": 0.997565,
+        "f1_score": 0.998173,
+        "roc_auc": 0.999087,
+    }
+
+    assert required_metrics.issubset(logistic_results.keys())
+    assert required_metrics.issubset(random_forest_results.keys())
+
+
+def test_random_forest_outperforms_logistic_regression_on_f1():
+    logistic_f1 = 0.065762
+    random_forest_f1 = 0.998173
+
+    assert random_forest_f1 > logistic_f1
