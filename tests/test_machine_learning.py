@@ -317,3 +317,71 @@ def test_suspicious_features_are_identified():
 
     assert "isFlaggedFraud" in suspicious
     assert "origin_balance_error" in suspicious
+
+def test_calculate_metrics_returns_required_metrics():
+    import numpy as np
+    import pandas as pd
+
+    from src.machine_learning.optimization import calculate_metrics
+
+    y_true = pd.Series([0, 0, 1, 1])
+    probabilities = np.array([0.1, 0.2, 0.8, 0.9])
+
+    results = calculate_metrics(
+        y_true,
+        probabilities,
+        threshold=0.5,
+    )
+
+    required = {
+        "threshold",
+        "accuracy",
+        "precision",
+        "recall",
+        "f1_score",
+        "roc_auc",
+    }
+
+    assert required.issubset(results.keys())
+
+
+def test_threshold_evaluation_returns_all_thresholds():
+    import numpy as np
+    import pandas as pd
+
+    from src.machine_learning.optimization import evaluate_thresholds
+
+    y_true = pd.Series([0, 0, 1, 1])
+    probabilities = np.array([0.1, 0.2, 0.8, 0.9])
+
+    thresholds = [0.25, 0.50, 0.75]
+
+    results = evaluate_thresholds(
+        y_true,
+        probabilities,
+        thresholds,
+    )
+
+    assert len(results) == 3
+    assert results["threshold"].tolist() == thresholds
+
+
+def test_best_threshold_is_selected_by_f1():
+    import pandas as pd
+
+    from src.machine_learning.optimization import select_best_threshold
+
+    results = pd.DataFrame(
+        {
+            "threshold": [0.25, 0.50, 0.75],
+            "f1_score": [0.60, 0.90, 0.70],
+        }
+    )
+
+    best = select_best_threshold(
+        results,
+        metric="f1_score",
+    )
+
+    assert best["threshold"] == 0.50
+    assert best["f1_score"] == 0.90
