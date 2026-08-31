@@ -228,3 +228,92 @@ def test_random_forest_outperforms_logistic_regression_on_f1():
     random_forest_f1 = 0.998173
 
     assert random_forest_f1 > logistic_f1
+
+
+def test_processed_dataset_has_expected_feature_count():
+    import pandas as pd
+
+    df = pd.DataFrame(
+        {
+            "step": [1],
+            "type": ["PAYMENT"],
+            "amount": [100.0],
+            "oldbalanceOrg": [500.0],
+            "newbalanceOrig": [400.0],
+            "oldbalanceDest": [0.0],
+            "newbalanceDest": [100.0],
+            "isFraud": [0],
+            "isFlaggedFraud": [0],
+            "origin_balance_change": [100.0],
+            "destination_balance_change": [100.0],
+            "origin_balance_error": [0.0],
+            "destination_balance_error": [0.0],
+            "origin_balance_error_abs": [0.0],
+            "destination_balance_error_abs": [0.0],
+            "origin_zero_balance_before": [0],
+            "origin_zero_balance_after": [0],
+            "destination_zero_balance_before": [1],
+            "destination_zero_balance_after": [0],
+            "amount_to_origin_balance": [0.2],
+            "amount_to_destination_balance": [0.0],
+            "is_transfer": [0],
+            "is_cash_out": [0],
+            "log_amount": [4.615],
+        }
+    )
+
+    assert len(df.columns) == 24
+
+
+def test_identifier_columns_are_not_in_processed_feature_list():
+    processed_columns = [
+        "step",
+        "type",
+        "amount",
+        "oldbalanceOrg",
+        "newbalanceOrig",
+        "oldbalanceDest",
+        "newbalanceDest",
+        "isFraud",
+        "isFlaggedFraud",
+        "origin_balance_change",
+        "destination_balance_change",
+        "origin_balance_error",
+        "destination_balance_error",
+        "origin_balance_error_abs",
+        "destination_balance_error_abs",
+        "origin_zero_balance_before",
+        "origin_zero_balance_after",
+        "destination_zero_balance_before",
+        "destination_zero_balance_after",
+        "amount_to_origin_balance",
+        "amount_to_destination_balance",
+        "is_transfer",
+        "is_cash_out",
+        "log_amount",
+    ]
+
+    assert "nameOrig" not in processed_columns
+    assert "nameDest" not in processed_columns
+
+
+def test_suspicious_features_are_identified():
+    import pandas as pd
+
+    df = pd.DataFrame(
+        {
+            "isFraud": [0, 1],
+            "isFlaggedFraud": [0, 1],
+            "origin_balance_error": [0.0, 1.0],
+            "amount": [100.0, 200.0],
+        }
+    )
+
+    from src.machine_learning.validation import (
+        identify_suspicious_features,
+    )
+
+    suspicious = identify_suspicious_features(df)
+
+    assert "isFlaggedFraud" in suspicious
+    assert "origin_balance_error" in suspicious
