@@ -10,8 +10,17 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+
+# Use a non-interactive backend so plotting works in:
+# - pytest
+# - GitHub Actions
+# - headless environments
+# - systems without Tk/Tkinter configured
+matplotlib.use("Agg")
+
 
 REQUIRED_COLUMNS = {
     "model",
