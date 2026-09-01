@@ -1,0 +1,5 @@
+model,accuracy,precision,recall,f1_score,roc_auc
+Random Forest,0.999995,0.998781,0.997565,0.998173,0.999087
+Autoencoder,,0.085778,0.722459,0.153349,0.943997
+Logistic Regression,0.967201,0.034137,0.894096,0.065762,0.984229
+Isolation Forest,,0.03526,0.270237,0.062381,0.893615
