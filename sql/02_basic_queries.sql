@@ -40,3 +40,9 @@ ORDER BY
     amount DESC
 LIMIT
     20;
+
+-- 6. Number of unique time steps represented in the dataset
+SELECT
+    COUNT(DISTINCT step) AS unique_time_steps
+FROM
+    transactions;

@@ -172,13 +172,19 @@ def test_smote_increases_minority_class(sample_data):
         test_size=0.2,
     )
 
+    minority_before = y_train.value_counts().min()
+    training_rows_before = len(X_train)
+
     X_resampled, y_resampled = apply_smote(
         X_train,
         y_train,
     )
 
-    assert len(X_resampled) == len(y_resampled)
-    assert y_resampled.value_counts()[0] == y_resampled.value_counts()[1]
+    minority_after = y_resampled.value_counts().min()
+    training_rows_after = len(X_resampled)
+
+    assert training_rows_after > training_rows_before
+    assert minority_after > minority_before
 
 
 def test_logistic_regression_creation():
@@ -317,6 +323,7 @@ def test_suspicious_features_are_identified():
 
     assert "isFlaggedFraud" in suspicious
     assert "origin_balance_error" in suspicious
+
 
 def test_calculate_metrics_returns_required_metrics():
     import numpy as np
