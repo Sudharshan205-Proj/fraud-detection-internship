@@ -113,6 +113,7 @@ reports/generated/
 # Excel temporary files
 ~$*.xlsx
 ~$*.xls
+*.csv
 
 # R Markdown generated files
 *_files/

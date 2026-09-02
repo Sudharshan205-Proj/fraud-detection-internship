@@ -15,7 +15,7 @@ An internship project that demonstrates the use of data analysis, machine learni
 | Phase 6 — Supervised Machine Learning | Complete |
 | Phase 7 — Anomaly Detection | Complete |
 | Phase 8 — Model Comparison & Selection | Complete |
-| Phase 9 — Explainability & Fraud Investigation | Complete |
+| Phase 9 — Explainability & Fraud Investigation | Verification |
 | Phase 10 — Application Development | In Progress |
 | Phase 11 — Visualization & Tableau | Pending |
 | Phase 12 — Testing & Validation | Pending |

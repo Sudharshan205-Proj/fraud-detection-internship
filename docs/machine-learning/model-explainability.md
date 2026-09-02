@@ -127,12 +127,84 @@ Consequently, feature importance reflects patterns present in this
 dataset and should not automatically be interpreted as representative of
 real-world banking fraud.
 
-## 11. Phase Status
+## 11. Transaction-Level Fraud Investigation
+
+In addition to global feature importance, the project provides a
+transaction-level investigation report.
+
+The investigation workflow uses the selected Random Forest model to
+calculate a fraud probability for each transaction.
+
+Transactions are then assigned an investigation priority:
+
+- Low
+- Moderate
+- High
+- Critical
+
+Transactions are sorted by fraud probability so that higher-risk
+transactions can be reviewed first.
+
+The generated investigation report is stored at:
+
+`docs/machine-learning/explainability/fraud-investigation-report.csv`
+
+The report is intended to support fraud analysts by helping prioritize
+transactions for further review.
+
+A high fraud probability does not establish that a transaction is
+fraudulent. Model predictions should be treated as investigation
+candidates rather than definitive conclusions.
+
+## 12. Explainability and Investigation Limitations
+
+The investigation workflow has several limitations.
+
+First, the Random Forest was trained using the synthetic PaySim dataset.
+Therefore, its predictions and explanations reflect patterns within that
+dataset.
+
+Second, fraud probability is a model output rather than a verified
+probability of criminal or fraudulent activity.
+
+Third, global feature importance describes model dependence on features
+across the dataset. It does not necessarily explain the causal reason for
+a specific transaction-level prediction.
+
+Finally, real-world fraud investigation would require additional
+context such as customer history, authentication information, device
+information, merchant information, geographic context, and analyst
+review. These factors are outside the scope of the PaySim dataset.
+
+## 13. Responsible Use
+
+The fraud detection model should be used as a decision-support tool.
+
+Model predictions should not be interpreted as proof that a customer,
+account, or transaction is fraudulent.
+
+A suspicious transaction should instead be reviewed using appropriate
+investigation procedures and additional evidence.
+
+The system is therefore designed to prioritize potentially suspicious
+transactions rather than automatically declare criminal activity.
+
+## 14. Phase Status
 
 Model explainability analysis: Complete
 
 Feature importance analysis: Complete
 
+Permutation importance support: Complete
+
+Transaction-level investigation support: Complete
+
+Investigation report generation: Complete
+
 Explainability documentation: Complete
+
+Responsible-use limitations: Complete
+
+Phase 9: Complete
 
 Ready for subsequent application/deployment stages: Yes
