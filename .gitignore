@@ -45,7 +45,6 @@ data/processed/*
 
 *.pkl
 *.pickle
-*.joblib
 *.h5
 *.keras
 *.onnx
