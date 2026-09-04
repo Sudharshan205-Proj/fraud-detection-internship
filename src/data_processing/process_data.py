@@ -164,6 +164,21 @@ _PROCESSED_DTYPES = {
 }
 
 
+def _require_columns(
+    df: pd.DataFrame,
+    expected_columns: list[str],
+    message: str,
+) -> None:
+    """Raise ``ValueError`` if any expected column is absent from ``df``."""
+
+    missing_columns = [
+        column for column in expected_columns if column not in df.columns
+    ]
+
+    if missing_columns:
+        raise ValueError(f"{message}: {missing_columns}")
+
+
 def load_data(path: Path = RAW_PATH, max_rows: int | None = None) -> pd.DataFrame:
     """Load the raw PaySim dataset with dtype-aware parsing.
 
@@ -185,12 +200,7 @@ def load_data(path: Path = RAW_PATH, max_rows: int | None = None) -> pd.DataFram
 
     df = pd.read_csv(path, dtype=_RAW_DTYPES, nrows=max_rows)
 
-    missing_columns = [
-        column for column in EXPECTED_COLUMNS if column not in df.columns
-    ]
-
-    if missing_columns:
-        raise ValueError(f"Missing required columns: {missing_columns}")
+    _require_columns(df, EXPECTED_COLUMNS, "Missing required columns")
 
     return df
 
@@ -223,12 +233,7 @@ def load_processed_dataset(
 
     df = pd.read_csv(path, dtype=_PROCESSED_DTYPES, nrows=max_rows)
 
-    missing_columns = [
-        column for column in PROCESSED_COLUMNS if column not in df.columns
-    ]
-
-    if missing_columns:
-        raise ValueError(f"Processed dataset is missing columns: {missing_columns}")
+    _require_columns(df, PROCESSED_COLUMNS, "Processed dataset is missing columns")
 
     return df
 

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import pandas as pd
 from sklearn.ensemble import IsolationForest
 
 from src.machine_learning.metrics import classification_metrics
@@ -79,18 +78,3 @@ def evaluate_isolation_forest(
         include_accuracy=False,
     )
 
-
-def results_to_dataframe(
-    X,
-    predictions,
-    anomaly_scores,
-) -> pd.DataFrame:
-    """
-    Create a dataframe containing anomaly predictions and scores.
-    """
-    results = X.copy()
-
-    results["anomaly_prediction"] = predictions
-    results["anomaly_score"] = anomaly_scores
-
-    return results

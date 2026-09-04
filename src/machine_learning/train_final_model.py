@@ -12,8 +12,8 @@ import json
 from pathlib import Path
 
 import joblib
-import pandas as pd
 
+from src.data_processing.process_data import load_processed_dataset
 from src.feature_engineering.features import (
     engineer_features,
     get_model_features,
@@ -41,7 +41,8 @@ def load_and_prepare_data():
 
     print("Loading processed dataset...")
 
-    df = pd.read_csv(DATA_PATH)
+    # Shared dtype-aware loader keeps memory bounded on the full dataset.
+    df = load_processed_dataset(DATA_PATH)
 
     print(f"Original shape: {df.shape}")
 
@@ -72,6 +73,13 @@ def train_final_model():
 
     X, y, feature_columns, df = load_and_prepare_data()
 
+    # Capture the inference thresholds from the full dataset, then drop the
+    # 36-column frame so training does not hold it in memory as well.
+    amount_threshold = float(df["amount"].quantile(0.99))
+    step_threshold = float(df["step"].quantile(0.90))
+
+    del df
+
     print("\nSplitting data...")
 
     X_train, X_test, y_train, y_test = train_test_split_data(  # noqa: RUF059
@@ -84,6 +92,9 @@ def train_final_model():
     print(f"Training rows: {len(X_train)}")
     print(f"Testing rows: {len(X_test)}")
 
+    # The full frames and the test split are not needed for training.
+    del X, y, X_test, y_test
+
     print("\nCreating Random Forest...")
 
     model = create_random_forest()
@@ -93,6 +104,9 @@ def train_final_model():
     model.fit(X_train, y_train)
 
     print("Training complete.")
+
+    # Free the training matrices before writing the artifacts.
+    del X_train, y_train
 
     MODEL_PATH.parent.mkdir(
         parents=True,
@@ -111,15 +125,6 @@ def train_final_model():
     FEATURE_SCHEMA_PATH.parent.mkdir(
         parents=True,
         exist_ok=True,
-    )
-
-    amount_threshold = float(
-        df["amount"].quantile(0.99)
-    )
-
-
-    step_threshold = float(
-        df["step"].quantile(0.90)
     )
 
     feature_schema = {

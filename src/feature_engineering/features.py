@@ -17,7 +17,6 @@ features from the processed PaySim dataset.
 
 from __future__ import annotations
 
-import numpy as np
 import pandas as pd
 
 REQUIRED_COLUMNS = [
@@ -41,6 +40,7 @@ REQUIRED_DERIVED_COLUMNS = [
     "origin_zero_balance_before",
     "is_transfer",
     "is_cash_out",
+    "log_amount",
 ]
 
 
@@ -84,7 +84,9 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     # Transaction amount features
     # ------------------------------------------------------------
 
-    df["amount_log_ratio"] = np.log1p(df["amount"])
+    # ``log_amount`` was already computed by the processing pipeline;
+    # reuse it instead of recomputing the log over the full dataset.
+    df["amount_log_ratio"] = df["log_amount"]
 
     df["amount_to_origin_balance"] = (
         df["amount"]
