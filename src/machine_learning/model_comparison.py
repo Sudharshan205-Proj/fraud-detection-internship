@@ -14,6 +14,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
 
+from src.machine_learning.output import prepare_output_path
+
 # Use a non-interactive backend so plotting works in:
 # - pytest
 # - GitHub Actions
@@ -37,13 +39,6 @@ METRICS = [
     "f1_score",
     "roc_auc",
 ]
-
-
-def _prepare_output_path(output_path: str | Path) -> Path:
-    """Create the parent directory for an output artifact."""
-    path = Path(output_path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    return path
 
 
 def create_model_comparison(results: list[dict]) -> pd.DataFrame:
@@ -108,7 +103,7 @@ def save_comparison_table(
     """
     Save the model comparison table as CSV.
     """
-    output_path = _prepare_output_path(output_path)
+    output_path = prepare_output_path(output_path)
 
     comparison_df.to_csv(
         output_path,
@@ -138,7 +133,7 @@ def plot_model_comparison(
     plt.xticks(rotation=20)
     plt.tight_layout()
 
-    output_path = _prepare_output_path(output_path)
+    output_path = prepare_output_path(output_path)
 
     plt.savefig(
         output_path,

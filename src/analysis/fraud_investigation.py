@@ -13,6 +13,7 @@ import pandas as pd
 from src.data_processing.process_data import load_processed_dataset
 from src.machine_learning.explainability import get_feature_importance
 from src.machine_learning.models import create_random_forest
+from src.machine_learning.prepare import prepare_categorical_features
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
@@ -43,12 +44,9 @@ def prepare_features(df):
     X = df.drop(columns=[target])
     y = df[target]
 
-    if "type" in X.columns:
-        X = pd.get_dummies(
-            X,
-            columns=["type"],
-            dtype=int,
-        )
+    # Reuse the shared categorical preparation (identifier removal +
+    # one-hot encoding of the transaction type).
+    X = prepare_categorical_features(X)
 
     return X, y
 

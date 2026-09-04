@@ -14,6 +14,7 @@ from src.machine_learning.explainability import (
     save_feature_importance,
 )
 from src.machine_learning.models import create_random_forest
+from src.machine_learning.prepare import prepare_categorical_features
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -23,11 +24,6 @@ OUTPUT_DIR = (
     / "machine-learning"
     / "explainability"
 )
-
-IDENTIFIER_COLUMNS = [
-    "nameOrig",
-    "nameDest",
-]
 
 
 def prepare_model_data(df: pd.DataFrame):
@@ -47,22 +43,9 @@ def prepare_model_data(df: pd.DataFrame):
     X = df.drop(columns=[target])
     y = df[target]
 
-    present_identifiers = [
-        column for column in IDENTIFIER_COLUMNS if column in X.columns
-    ]
-
-    if present_identifiers:
-        X = X.drop(
-            columns=present_identifiers,
-            errors="ignore",
-        )
-
-    if "type" in X.columns:
-        X = pd.get_dummies(
-            X,
-            columns=["type"],
-            dtype=int,
-        )
+    # Reuse the shared categorical preparation (identifier removal +
+    # one-hot encoding of the transaction type).
+    X = prepare_categorical_features(X)
 
     return X, y
 

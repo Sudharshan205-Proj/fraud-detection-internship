@@ -1,8 +1,16 @@
+"""
+Model factories for the supervised classification baselines.
+
+Both the Logistic Regression baseline and the selected Random Forest
+use balanced class weighting because the PaySim fraud target is
+extremely imbalanced.
+"""
+
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 
 
-def create_logistic_regression(random_state=42):
+def create_logistic_regression(random_state: int = 42):
     """
     Create the baseline Logistic Regression model.
     """
@@ -13,7 +21,7 @@ def create_logistic_regression(random_state=42):
     )
 
 
-def create_random_forest(random_state=42):
+def create_random_forest(random_state: int = 42):
     """
     Create the baseline Random Forest classifier.
     """

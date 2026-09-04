@@ -162,10 +162,10 @@ class FraudModelService:
         # Required processed-dataset flag.
         df["isFlaggedFraud"] = 0
 
-        # Balance changes.
+        # Balance changes (signs match src.data_processing.process_data).
         df["origin_balance_change"] = (
-            df["newbalanceOrig"]
-            - df["oldbalanceOrg"]
+            df["oldbalanceOrg"]
+            - df["newbalanceOrig"]
         )
 
         df["destination_balance_change"] = (
@@ -173,17 +173,15 @@ class FraudModelService:
             - df["oldbalanceDest"]
         )
 
-        # Balance errors.
+        # Balance errors (same definitions as the processing pipeline).
         df["origin_balance_error"] = (
-            df["oldbalanceOrg"]
+            df["origin_balance_change"]
             - df["amount"]
-            - df["newbalanceOrig"]
         )
 
         df["destination_balance_error"] = (
-            df["oldbalanceDest"]
-            + df["amount"]
-            - df["newbalanceDest"]
+            df["destination_balance_change"]
+            - df["amount"]
         )
 
         df["origin_balance_error_abs"] = (
@@ -236,10 +234,8 @@ class FraudModelService:
             / (df["oldbalanceDest"] + 1)
         )
 
-        df["amount_log_ratio"] = (
-            df["log_amount"]
-            / (df["amount"] + 1)
-        )
+        # Same definition as src.feature_engineering.features.
+        df["amount_log_ratio"] = df["log_amount"]
 
         df["origin_balance_change_ratio"] = (
             df["origin_balance_change"].abs()
@@ -374,12 +370,9 @@ class FraudModelService:
 
         X = df[self.feature_columns].copy()
 
-        # Make sure every feature is numeric.
-        for column in X.columns:
-            X[column] = pd.to_numeric(
-                X[column],
-                errors="raise",
-            )
+        # Every model feature is numeric by construction; a single cast
+        # replaces the per-column conversion loop.
+        X = X.astype(float)
 
         return X
 

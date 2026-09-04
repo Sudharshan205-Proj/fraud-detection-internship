@@ -84,12 +84,3 @@ def select_best_threshold(
 
     return threshold_results.loc[best_index]
 
-
-def compare_model_scores(
-    results: dict[str, dict[str, float]],
-) -> pd.DataFrame:
-    """
-    Convert model evaluation results into a comparison table.
-    """
-
-    return pd.DataFrame(results).T

@@ -203,6 +203,10 @@ def run_autoencoder(
         percentile=99,
     )
 
+    # Free the training reconstruction errors and normal-only slice;
+    # only the model and threshold are needed from here on.
+    del training_errors, X_train_normal
+
     test_errors = calculate_reconstruction_error(
         model,
         X_test,
@@ -243,6 +247,9 @@ def main(max_rows: int | None = None) -> None:
     print(f"Dataset shape: {df.shape}")
 
     X, y = prepare_features(df)
+
+    # The NumPy feature matrix is now the only thing the pipeline needs.
+    del df
 
     print(f"Feature matrix shape: {X.shape}")
 
