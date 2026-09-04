@@ -1,0 +1,255 @@
+---
+
+title: "Fraud Detection Analysis"
+author: "Fraud Detection Internship Project"
+date: "`r Sys.Date()`"
+output:
+html_document:
+toc: true
+toc_depth: 2
+------------
+
+# Overview
+
+This report presents the Phase 11 analytical and visualization outputs
+for the Fraud Detection System internship project.
+
+The analysis uses compact aggregated datasets generated from the
+processed PaySim dataset.
+
+The project follows the internship methodology:
+
+**Ask → Prepare → Process → Analyze → Share → Act**
+
+This report contributes to the **Share** stage by communicating
+fraud-related findings through tables and visualizations.
+
+# Data Summary
+
+```{r setup, message=FALSE, warning=FALSE}
+
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+data_dir <- file.path("..", "data", "visualization")
+
+summary_data <- read_csv(
+  file.path(data_dir, "fraud_summary.csv"),
+  show_col_types = FALSE
+)
+
+by_type <- read_csv(
+  file.path(data_dir, "fraud_by_type.csv"),
+  show_col_types = FALSE
+)
+
+by_step <- read_csv(
+  file.path(data_dir, "fraud_by_step.csv"),
+  show_col_types = FALSE
+)
+
+by_amount <- read_csv(
+  file.path(data_dir, "fraud_by_amount.csv"),
+  show_col_types = FALSE
+)
+
+model_performance <- read_csv(
+  file.path(data_dir, "model_performance.csv"),
+  show_col_types = FALSE
+)
+
+summary_data
+```
+
+# Fraud by Transaction Type
+
+The transaction-type analysis compares the number of transactions and
+fraud rate associated with each transaction category.
+
+```{r fraud-by-type-table}
+
+by_type %>%
+  arrange(desc(fraud_rate_percent))
+```
+
+```{r fraud-by-type-plot}
+
+ggplot(
+  by_type,
+  aes(
+    x = reorder(transaction_type, fraud_rate_percent),
+    y = fraud_rate_percent
+  )
+) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Fraud Rate by Transaction Type",
+    x = "Transaction Type",
+    y = "Fraud Rate (%)"
+  ) +
+  theme_minimal()
+```
+
+# Fraud Across Simulation Steps
+
+The PaySim dataset contains simulation steps that can be used to
+investigate how fraud activity changes throughout the simulated period.
+
+```{r fraud-by-step-plot}
+
+ggplot(
+  by_step,
+  aes(
+    x = step,
+    y = fraud_transactions
+  )
+) +
+  geom_line() +
+  labs(
+    title = "Fraud Transactions Across Simulation Steps",
+    x = "Simulation Step",
+    y = "Fraud Transactions"
+  ) +
+  theme_minimal()
+```
+
+# Transaction Amount Analysis
+
+Transaction amounts are grouped into ranges so that the distribution
+can be communicated without exposing the complete transaction-level
+dataset.
+
+```{r fraud-by-amount-table}
+
+by_amount %>%
+  arrange(amount_order)
+```
+
+```{r fraud-by-amount-plot}
+
+ggplot(
+  by_amount,
+  aes(
+    x = reorder(amount_bin, amount_order),
+    y = fraud_rate_percent
+  )
+) +
+  geom_col() +
+  labs(
+    title = "Fraud Rate by Transaction Amount Range",
+    x = "Transaction Amount Range",
+    y = "Fraud Rate (%)"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1
+    )
+  )
+```
+
+# Model Comparison
+
+The Phase 8 model comparison provides the model-performance evidence
+used in this visualization stage.
+
+```{r model-performance-table}
+
+model_performance
+```
+
+```{r model-performance-preparation}
+
+model_long <- model_performance %>%
+  select(
+    model,
+    precision,
+    recall,
+    f1_score,
+    roc_auc
+  ) %>%
+  pivot_longer(
+    cols = c(
+      precision,
+      recall,
+      f1_score,
+      roc_auc
+    ),
+    names_to = "metric",
+    values_to = "score"
+  )
+
+model_long
+```
+
+```{r model-performance-plot}
+
+ggplot(
+  model_long,
+  aes(
+    x = model,
+    y = score,
+    fill = metric
+  )
+) +
+  geom_col(position = "dodge") +
+  labs(
+    title = "Fraud Detection Model Performance",
+    x = "Model",
+    y = "Score",
+    fill = "Metric"
+  ) +
+  ylim(0, 1.05) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(
+      angle = 20,
+      hjust = 1
+    )
+  )
+```
+
+# Findings
+
+The visualization stage focuses on communicating the analytical
+findings rather than creating additional machine-learning models.
+
+The following areas are emphasized:
+
+1. Overall fraud prevalence.
+2. Differences in fraud rates between transaction types.
+3. Changes in fraud activity across simulation steps.
+4. Differences in fraud rates across transaction amount ranges.
+5. Comparative model performance using precision, recall, F1-score,
+   and ROC-AUC.
+
+The Phase 8 model comparison identified Random Forest as the strongest
+overall supervised approach in the evaluated results.
+
+The anomaly-detection models remain important because they demonstrate
+alternative approaches to fraud detection.
+
+# Limitations
+
+The PaySim dataset is synthetic and therefore the visual findings
+should not be interpreted as production banking behaviour.
+
+The visualizations communicate patterns in the project dataset and do
+not establish that the same patterns would occur in a real financial
+institution.
+
+Model predictions identify transactions that may warrant further
+investigation. They are not proof that a transaction or customer is
+fraudulent.
+
+# Conclusion
+
+Phase 11 converts analytical results into visual and narrative outputs
+for non-technical stakeholders.
+
+The outputs include Python visualizations, R visualizations, an
+R Markdown report, and an interactive Tableau dashboard.

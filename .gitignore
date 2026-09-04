@@ -148,3 +148,15 @@ data/*.sqlite3
 #============================================================
 
 .freebuff/
+
+# ============================================================
+# Phase 11 - Visualization data
+# ============================================================
+
+!data/visualization/
+!data/visualization/*.csv
+
+# Phase 11 generated figures
+!reports/
+!reports/figures/
+!reports/figures/*.png

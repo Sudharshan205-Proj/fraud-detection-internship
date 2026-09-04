@@ -1,0 +1,9 @@
+metric,value
+Total Transactions,6362620.0
+Fraud Transactions,8213.0
+Legitimate Transactions,6354407.0
+Fraud Rate (%),0.12908204481801522
+Total Transaction Amount,1144392944759.7698
+Average Transaction Amount,179861.90354913066
+Minimum Transaction Amount,0.0
+Maximum Transaction Amount,92445516.64
