@@ -5,17 +5,22 @@ Provides transaction-level investigation outputs using the
 selected Random Forest model and model feature importance.
 """
 
+import argparse
 from pathlib import Path
 
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
 
-DATA_PATH = Path(
-    "data/processed/paysim_processed.csv"
-)
+from src.data_processing.process_data import load_processed_dataset
+from src.machine_learning.explainability import get_feature_importance
+from src.machine_learning.models import create_random_forest
 
-OUTPUT_DIR = Path(
-    "docs/machine-learning/explainability"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+OUTPUT_DIR = (
+    PROJECT_ROOT
+    / "docs"
+    / "machine-learning"
+    / "explainability"
 )
 
 
@@ -53,12 +58,7 @@ def train_investigation_model(X, y):
     Train the Random Forest model used for investigation.
     """
 
-    model = RandomForestClassifier(
-        n_estimators=100,
-        random_state=42,
-        n_jobs=-1,
-        class_weight="balanced",
-    )
+    model = create_random_forest()
 
     model.fit(X, y)
 
@@ -156,10 +156,13 @@ def save_investigation_report(
     )
 
 
-def main():
+def main(max_rows: int | None = None) -> None:
     print("Loading processed dataset...")
 
-    df = pd.read_csv(DATA_PATH)
+    df = load_processed_dataset(max_rows=max_rows)
+
+    if max_rows is not None:
+        print(f"Sample mode active: using at most {max_rows:,} rows.")
 
     print("Rows:", len(df))
     print("Columns:", len(df.columns))
@@ -179,10 +182,6 @@ def main():
 
     print("Model trained successfully.")
 
-    from src.machine_learning.explainability import (
-        get_feature_importance,
-    )
-
     feature_importance = get_feature_importance(
         model,
         X.columns,
@@ -196,11 +195,6 @@ def main():
         original_df=df,
         feature_importance=feature_importance,
         top_n=10,
-    )
-
-    OUTPUT_DIR.mkdir(
-        parents=True,
-        exist_ok=True,
     )
 
     output_path = (
@@ -231,4 +225,19 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(
+        description=(
+            "Generate a transaction-level fraud-investigation report "
+            "using the selected Random Forest model."
+        ),
+    )
+    parser.add_argument(
+        "--max-rows",
+        type=int,
+        default=None,
+        metavar="N",
+        help="Optional row cap for fast sample-mode runs (default: full dataset).",
+    )
+    args = parser.parse_args()
+
+    main(max_rows=args.max_rows)

@@ -14,6 +14,13 @@ import pandas as pd
 from sklearn.inspection import permutation_importance
 
 
+def _prepare_output_path(output_path: str | Path) -> Path:
+    """Create the parent directory for an output artifact."""
+    path = Path(output_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    return path
+
+
 def get_feature_importance(model, feature_names) -> pd.DataFrame:
     """
     Return Random Forest feature importance values.
@@ -97,8 +104,7 @@ def save_feature_importance(
     """
     Save feature importance results as CSV.
     """
-    output_path = Path(output_path)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path = _prepare_output_path(output_path)
 
     importance_df.to_csv(
         output_path,
@@ -133,8 +139,7 @@ def plot_feature_importance(
 
     plt.tight_layout()
 
-    output_path = Path(output_path)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path = _prepare_output_path(output_path)
 
     plt.savefig(
         output_path,

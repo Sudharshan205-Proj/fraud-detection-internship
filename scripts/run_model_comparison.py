@@ -1,7 +1,5 @@
 from pathlib import Path
 
-import pandas as pd  # noqa: F401
-
 from src.machine_learning.model_comparison import (
     create_model_comparison,
     plot_model_comparison,
@@ -17,47 +15,49 @@ CSV_OUTPUT = OUTPUT_DIR / "model_comparison.csv"
 PLOT_OUTPUT = OUTPUT_DIR / "model_comparison.png"
 REPORT_OUTPUT = OUTPUT_DIR / "model_selection.md"
 
+# Recorded results from the verified Phase 6/7 runs. These values are
+# run artifacts, not live measurements: reproducing them requires
+# re-running the full supervised and anomaly-detection pipelines.
+VERIFIED_RESULTS = [
+    {
+        "model": "Logistic Regression",
+        "accuracy": 0.967201,
+        "precision": 0.034137,
+        "recall": 0.894096,
+        "f1_score": 0.065762,
+        "roc_auc": 0.984229,
+    },
+    {
+        "model": "Random Forest",
+        "accuracy": 0.999995,
+        "precision": 0.998781,
+        "recall": 0.997565,
+        "f1_score": 0.998173,
+        "roc_auc": 0.999087,
+    },
+    {
+        "model": "Isolation Forest",
+        "accuracy": None,
+        "precision": 0.035260,
+        "recall": 0.270237,
+        "f1_score": 0.062381,
+        "roc_auc": 0.893615,
+    },
+    {
+        "model": "Autoencoder",
+        "accuracy": None,
+        "precision": 0.085778,
+        "recall": 0.722459,
+        "f1_score": 0.153349,
+        "roc_auc": 0.943997,
+    },
+]
+
 
 def main() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Results obtained from the verified Phase 6 and Phase 7 runs.
-    results = [
-        {
-            "model": "Logistic Regression",
-            "accuracy": 0.967201,
-            "precision": 0.034137,
-            "recall": 0.894096,
-            "f1_score": 0.065762,
-            "roc_auc": 0.984229,
-        },
-        {
-            "model": "Random Forest",
-            "accuracy": 0.999995,
-            "precision": 0.998781,
-            "recall": 0.997565,
-            "f1_score": 0.998173,
-            "roc_auc": 0.999087,
-        },
-        {
-            "model": "Isolation Forest",
-            "accuracy": None,
-            "precision": 0.035260,
-            "recall": 0.270237,
-            "f1_score": 0.062381,
-            "roc_auc": 0.893615,
-        },
-        {
-            "model": "Autoencoder",
-            "accuracy": None,
-            "precision": 0.085778,
-            "recall": 0.722459,
-            "f1_score": 0.153349,
-            "roc_auc": 0.943997,
-        },
-    ]
-
-    comparison = create_model_comparison(results)
+    comparison = create_model_comparison(VERIFIED_RESULTS)
 
     save_comparison_table(
         comparison,

@@ -1,18 +1,13 @@
 """
-Phase 7: Model optimization and threshold analysis.
+Phase 6: Model optimization and threshold analysis.
 """
 
 from __future__ import annotations
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import (
-    accuracy_score,
-    f1_score,
-    precision_score,
-    recall_score,
-    roc_auc_score,
-)
+
+from src.machine_learning.metrics import classification_metrics
 
 
 def calculate_metrics(
@@ -28,27 +23,27 @@ def calculate_metrics(
 
     return {
         "threshold": threshold,
-        "accuracy": accuracy_score(y_true, predictions),
-        "precision": precision_score(
+        **classification_metrics(
             y_true,
             predictions,
-            zero_division=0,
-        ),
-        "recall": recall_score(
-            y_true,
-            predictions,
-            zero_division=0,
-        ),
-        "f1_score": f1_score(
-            y_true,
-            predictions,
-            zero_division=0,
-        ),
-        "roc_auc": roc_auc_score(
-            y_true,
             probabilities,
+            include_accuracy=True,
         ),
     }
+
+
+def default_thresholds() -> list[float]:
+    """
+    Return the default threshold grid from 0.10 to 0.95 inclusive.
+    """
+
+    return [
+        float(threshold)
+        for threshold in np.round(
+            np.arange(0.10, 0.951, 0.05),
+            2,
+        )
+    ]
 
 
 def evaluate_thresholds(
@@ -61,33 +56,10 @@ def evaluate_thresholds(
     """
 
     if thresholds is None:
-        thresholds = [
-            0.10,
-            0.15,
-            0.20,
-            0.25,
-            0.30,
-            0.35,
-            0.40,
-            0.45,
-            0.50,
-            0.55,
-            0.60,
-            0.65,
-            0.70,
-            0.75,
-            0.80,
-            0.85,
-            0.90,
-            0.95,
-        ]
+        thresholds = default_thresholds()
 
     results = [
-        calculate_metrics(
-            y_true,
-            probabilities,
-            threshold,
-        )
+        calculate_metrics(y_true, probabilities, threshold)
         for threshold in thresholds
     ]
 

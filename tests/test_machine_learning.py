@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -237,8 +238,6 @@ def test_random_forest_outperforms_logistic_regression_on_f1():
 
 
 def test_processed_dataset_has_expected_feature_count():
-    import pandas as pd
-
     df = pd.DataFrame(
         {
             "step": [1],
@@ -304,8 +303,6 @@ def test_identifier_columns_are_not_in_processed_feature_list():
 
 
 def test_suspicious_features_are_identified():
-    import pandas as pd
-
     df = pd.DataFrame(
         {
             "isFraud": [0, 1],
@@ -326,9 +323,6 @@ def test_suspicious_features_are_identified():
 
 
 def test_calculate_metrics_returns_required_metrics():
-    import numpy as np
-    import pandas as pd
-
     from src.machine_learning.optimization import calculate_metrics
 
     y_true = pd.Series([0, 0, 1, 1])
@@ -353,9 +347,6 @@ def test_calculate_metrics_returns_required_metrics():
 
 
 def test_threshold_evaluation_returns_all_thresholds():
-    import numpy as np
-    import pandas as pd
-
     from src.machine_learning.optimization import evaluate_thresholds
 
     y_true = pd.Series([0, 0, 1, 1])
@@ -374,8 +365,6 @@ def test_threshold_evaluation_returns_all_thresholds():
 
 
 def test_best_threshold_is_selected_by_f1():
-    import pandas as pd
-
     from src.machine_learning.optimization import select_best_threshold
 
     results = pd.DataFrame(

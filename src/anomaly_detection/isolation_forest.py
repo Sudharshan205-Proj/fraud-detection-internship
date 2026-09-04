@@ -2,12 +2,8 @@ from __future__ import annotations
 
 import pandas as pd
 from sklearn.ensemble import IsolationForest
-from sklearn.metrics import (
-    f1_score,
-    precision_score,
-    recall_score,
-    roc_auc_score,
-)
+
+from src.machine_learning.metrics import classification_metrics
 
 
 def create_isolation_forest(
@@ -72,28 +68,16 @@ def evaluate_isolation_forest(
 ) -> dict:
     """
     Evaluate Isolation Forest using fraud-detection metrics.
+
+    The negative decision-function values are used as continuous
+    anomaly scores for ROC-AUC.
     """
-    return {
-        "precision": precision_score(
-            y_true,
-            y_pred,
-            zero_division=0,
-        ),
-        "recall": recall_score(
-            y_true,
-            y_pred,
-            zero_division=0,
-        ),
-        "f1_score": f1_score(
-            y_true,
-            y_pred,
-            zero_division=0,
-        ),
-        "roc_auc": roc_auc_score(
-            y_true,
-            anomaly_scores,
-        ),
-    }
+    return classification_metrics(
+        y_true,
+        y_pred,
+        anomaly_scores,
+        include_accuracy=False,
+    )
 
 
 def results_to_dataframe(

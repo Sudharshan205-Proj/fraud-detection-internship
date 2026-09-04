@@ -31,6 +31,20 @@ REQUIRED_COLUMNS = {
     "roc_auc",
 }
 
+METRICS = [
+    "precision",
+    "recall",
+    "f1_score",
+    "roc_auc",
+]
+
+
+def _prepare_output_path(output_path: str | Path) -> Path:
+    """Create the parent directory for an output artifact."""
+    path = Path(output_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    return path
+
 
 def create_model_comparison(results: list[dict]) -> pd.DataFrame:
     """
@@ -94,8 +108,7 @@ def save_comparison_table(
     """
     Save the model comparison table as CSV.
     """
-    output_path = Path(output_path)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path = _prepare_output_path(output_path)
 
     comparison_df.to_csv(
         output_path,
@@ -110,14 +123,7 @@ def plot_model_comparison(
     """
     Create a comparison chart for the main fraud-detection metrics.
     """
-    metrics = [
-        "precision",
-        "recall",
-        "f1_score",
-        "roc_auc",
-    ]
-
-    plot_df = comparison_df.set_index("model")[metrics]
+    plot_df = comparison_df.set_index("model")[METRICS]
 
     ax = plot_df.plot(
         kind="bar",
@@ -132,8 +138,7 @@ def plot_model_comparison(
     plt.xticks(rotation=20)
     plt.tight_layout()
 
-    output_path = Path(output_path)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path = _prepare_output_path(output_path)
 
     plt.savefig(
         output_path,

@@ -19,7 +19,7 @@ The processed dataset used is:
 
 `data/processed/paysim_processed.csv`
 
-The dataset contains the engineered transaction features produced during the earlier project phases.
+The dataset contains the engineered transaction features produced during the earlier project phases (24 columns: 9 original columns retained plus 15 engineered features).
 
 The target variable is:
 
@@ -43,13 +43,12 @@ The model is trained without using the fraud labels as model features.
 
 ### Evaluation
 
-Precision: TO BE INSERTED
-
-Recall: TO BE INSERTED
-
-F1-score: TO BE INSERTED
-
-ROC-AUC: TO BE INSERTED
+| Metric    | Score    |
+| --------- | -------: |
+| Precision | 0.035260 |
+| Recall    | 0.270237 |
+| F1-score  | 0.062381 |
+| ROC-AUC   | 0.893615 |
 
 ---
 
@@ -73,17 +72,12 @@ The threshold uses the 99th percentile.
 
 ### Evaluation
 
-Isolation Forest Results
-precision: 0.035260
-recall: 0.270237
-f1_score: 0.062381
-roc_auc: 0.893615
-
-Autoencoder Results
-precision: 0.089292
-recall: 0.742544
-f1_score: 0.159415
-roc_auc: 0.941359
+| Metric    | Score    |
+| --------- | -------: |
+| Precision | 0.089292 |
+| Recall    | 0.742544 |
+| F1-score  | 0.159415 |
+| ROC-AUC   | 0.941359 |
 
 ---
 

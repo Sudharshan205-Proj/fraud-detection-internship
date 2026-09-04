@@ -7,6 +7,7 @@ from src.analysis.fraud_investigation import (
     save_investigation_report,
     train_investigation_model,
 )
+from src.machine_learning.explainability import get_feature_importance
 
 
 def create_sample_data():
@@ -87,10 +88,6 @@ def test_create_investigation_report():
         y,
     )
 
-    from src.machine_learning.explainability import (
-        get_feature_importance,
-    )
-
     importance = get_feature_importance(
         model,
         X.columns,
@@ -123,10 +120,6 @@ def test_investigation_report_sorted():
         y,
     )
 
-    from src.machine_learning.explainability import (
-        get_feature_importance,
-    )
-
     importance = get_feature_importance(
         model,
         X.columns,
@@ -157,10 +150,6 @@ def test_save_investigation_report(tmp_path):
     model = train_investigation_model(
         X,
         y,
-    )
-
-    from src.machine_learning.explainability import (
-        get_feature_importance,
     )
 
     importance = get_feature_importance(

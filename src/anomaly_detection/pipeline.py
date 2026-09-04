@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pathlib import Path
+import argparse
 
 import numpy as np
 import pandas as pd
@@ -25,30 +25,9 @@ from src.anomaly_detection.isolation_forest import (
 from src.anomaly_detection.isolation_forest import (
     predict_anomalies as isolation_predict,
 )
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-
-DATA_PATH = (
-    PROJECT_ROOT
-    / "data"
-    / "processed"
-    / "paysim_processed.csv"
-)
-
+from src.data_processing.process_data import load_processed_dataset
 
 TARGET_COLUMN = "isFraud"
-
-
-def load_dataset() -> pd.DataFrame:
-    """
-    Load the processed PaySim dataset.
-    """
-    if not DATA_PATH.exists():
-        raise FileNotFoundError(
-            f"Dataset not found: {DATA_PATH}"
-        )
-
-    return pd.read_csv(DATA_PATH)
 
 
 def prepare_features(
@@ -57,10 +36,11 @@ def prepare_features(
     """
     Prepare numerical features for anomaly detection.
 
-    The processed dataset already contains engineered
-    numerical features, while 'type' is categorical.
-
-    One-hot encoding is applied to 'type'.
+    The processed dataset contains engineered numerical features plus
+    the categorical ``type`` variable, which is one-hot encoded. All
+    numeric columns are combined into a single float64 feature matrix
+    with ``inf``/``NaN`` replaced in place, so the original frame is
+    not duplicated.
     """
 
     if TARGET_COLUMN not in df.columns:
@@ -68,11 +48,9 @@ def prepare_features(
             f"Missing target column: {TARGET_COLUMN}"
         )
 
-    data = df.copy()
+    y = df[TARGET_COLUMN].astype(int)
 
-    y = data[TARGET_COLUMN].astype(int)
-
-    X = data.drop(
+    X = df.drop(
         columns=[TARGET_COLUMN]
     )
 
@@ -83,18 +61,25 @@ def prepare_features(
             dtype=int,
         )
 
-    X = X.replace(
-        [np.inf, -np.inf],
-        np.nan,
-    )
+    numeric_columns = X.select_dtypes(include="number").columns
 
-    X = X.fillna(0)
+    if len(numeric_columns) < len(X.columns):
+        X = X[numeric_columns]
+
+    # Replace infinities and NaN in a single allocation, then build one
+    # float64 matrix that the scaler and models reuse.
+    X = np.nan_to_num(
+        X.to_numpy(dtype=np.float64),
+        nan=0.0,
+        posinf=0.0,
+        neginf=0.0,
+    )
 
     return X, y
 
 
 def split_and_scale(
-    X,
+    X: np.ndarray,
     y,
 ):
     """
@@ -172,12 +157,18 @@ def run_autoencoder(
     X_test,
     y_train,
     y_test,
+    verbose: int = 1,
 ):
     """
     Train and evaluate the autoencoder.
 
     The autoencoder learns normal transaction behaviour
     by training only on legitimate transactions.
+
+    Parameters
+    ----------
+    verbose:
+        Keras training verbosity (0 silences per-epoch output).
     """
 
     normal_training_mask = (
@@ -199,7 +190,7 @@ def run_autoencoder(
         batch_size=256,
         validation_split=0.1,
         shuffle=True,
-        verbose=1,
+        verbose=verbose,
     )
 
     training_errors = calculate_reconstruction_error(
@@ -237,44 +228,41 @@ def run_autoencoder(
     )
 
 
-def main():
+def main(max_rows: int | None = None) -> None:
     """
     Run the complete anomaly-detection workflow.
     """
 
     print("Loading processed PaySim dataset...")
 
-    df = load_dataset()
+    df = load_processed_dataset(max_rows=max_rows)
 
-    print(
-        f"Dataset shape: {df.shape}"
-    )
+    if max_rows is not None:
+        print(f"Sample mode active: using at most {max_rows:,} rows.")
+
+    print(f"Dataset shape: {df.shape}")
 
     X, y = prepare_features(df)
 
-    print(
-        f"Feature matrix shape: {X.shape}"
-    )
+    print(f"Feature matrix shape: {X.shape}")
 
     (
         X_train,
         X_test,
         y_train,
         y_test,
-        scaler,  # noqa: RUF059
+        _scaler,
     ) = split_and_scale(
         X,
         y,
     )
 
-    print(
-        "\nRunning Isolation Forest..."
-    )
+    print("\nRunning Isolation Forest...")
 
     (
-        isolation_model,  # noqa: RUF059
-        isolation_predictions,  # noqa: RUF059
-        isolation_scores,  # noqa: RUF059
+        _isolation_model,
+        _isolation_predictions,
+        _isolation_scores,
         isolation_metrics,
     ) = run_isolation_forest(
         X_train,
@@ -282,45 +270,48 @@ def main():
         y_test,
     )
 
-    print(
-        "\nIsolation Forest Results"
-    )
+    print("\nIsolation Forest Results")
 
     for metric, value in isolation_metrics.items():
-        print(
-            f"{metric}: {value:.6f}"
-        )
+        print(f"{metric}: {value:.6f}")
 
-    print(
-        "\nRunning Autoencoder..."
-    )
+    print("\nRunning Autoencoder...")
 
     (
-        autoencoder_model,  # noqa: RUF059
-        autoencoder_predictions,  # noqa: RUF059
-        reconstruction_errors,  # noqa: RUF059
+        _autoencoder_model,
+        _autoencoder_predictions,
+        _reconstruction_errors,
         threshold,
         autoencoder_metrics,
-            ) = run_autoencoder(
+    ) = run_autoencoder(
         X_train,
         X_test,
         y_train,
         y_test,
     )
 
-    print(
-        "\nAutoencoder Results"
-    )
+    print("\nAutoencoder Results")
 
     for metric, value in autoencoder_metrics.items():
-        print(
-            f"{metric}: {value:.6f}"
-        )
+        print(f"{metric}: {value:.6f}")
 
-    print(
-        f"\nAutoencoder threshold: {threshold:.6f}"
-    )
+    print(f"\nAutoencoder threshold: {threshold:.6f}")
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(
+        description=(
+            "Run the Isolation Forest and autoencoder anomaly-detection "
+            "workflow on the processed PaySim dataset."
+        ),
+    )
+    parser.add_argument(
+        "--max-rows",
+        type=int,
+        default=None,
+        metavar="N",
+        help="Optional row cap for fast sample-mode runs (default: full dataset).",
+    )
+    args = parser.parse_args()
+
+    main(max_rows=args.max_rows)

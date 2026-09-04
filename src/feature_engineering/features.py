@@ -1,7 +1,17 @@
 """
 Feature engineering utilities for the fraud detection project.
 
-This module creates additional behavioural and transaction-level
+Terminology
+-----------
+* The processed PaySim dataset has 24 columns (9 original columns
+  retained + 15 engineered features).
+* This module adds 12 further behavioural features, producing the
+  36-column feature-engineered dataset.
+* :func:`get_model_features` selects the 33 model features by
+  excluding the target ``isFraud``, the existing ``isFlaggedFraud``
+  flag (by default), and the categorical ``type`` column.
+
+The module creates the additional behavioural and transaction-level
 features from the processed PaySim dataset.
 """
 
@@ -22,123 +32,151 @@ REQUIRED_COLUMNS = [
     "isFlaggedFraud",
 ]
 
+# Features created by the processing pipeline that this stage builds on.
+REQUIRED_DERIVED_COLUMNS = [
+    "origin_balance_change",
+    "destination_balance_change",
+    "origin_balance_error_abs",
+    "destination_balance_error_abs",
+    "origin_zero_balance_before",
+    "is_transfer",
+    "is_cash_out",
+]
+
+
+def _validate_input_columns(df: pd.DataFrame) -> None:
+    missing_columns = [
+        column
+        for column in REQUIRED_COLUMNS + REQUIRED_DERIVED_COLUMNS
+        if column not in df.columns
+    ]
+
+    if missing_columns:
+        raise ValueError(
+            "Missing required columns: "
+            f"{missing_columns}. Process the raw data with "
+            "src.data_processing.process_data first."
+        )
+
 
 def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     """
     Create additional fraud-detection features.
 
+    Adds 12 behavioural features to the 24-column processed dataset,
+    producing the 36-column feature-engineered dataset. Columns are
+    assigned in place on the supplied frame (no defensive copy).
+
     Parameters
     ----------
     df:
-        Processed PaySim DataFrame.
+        Processed PaySim DataFrame (24 columns).
 
     Returns
     -------
     pd.DataFrame
-        DataFrame containing the original columns plus engineered features.
+        The same frame with the 12 engineered columns appended.
     """
 
-    missing_columns = [
-        column for column in REQUIRED_COLUMNS if column not in df.columns
-    ]
-
-    if missing_columns:
-        raise ValueError(
-            f"Missing required columns: {missing_columns}"
-        )
-
-    result = df.copy()
+    _validate_input_columns(df)
 
     # ------------------------------------------------------------
     # Transaction amount features
     # ------------------------------------------------------------
 
-    result["amount_log_ratio"] = np.log1p(result["amount"])
+    df["amount_log_ratio"] = np.log1p(df["amount"])
 
-    result["amount_to_origin_balance"] = (
-        result["amount"]
-        / (result["oldbalanceOrg"] + 1)
+    df["amount_to_origin_balance"] = (
+        df["amount"]
+        / (df["oldbalanceOrg"] + 1)
     )
 
-    result["amount_to_destination_balance"] = (
-        result["amount"]
-        / (result["oldbalanceDest"] + 1)
+    df["amount_to_destination_balance"] = (
+        df["amount"]
+        / (df["oldbalanceDest"] + 1)
     )
 
     # ------------------------------------------------------------
     # Origin account behaviour
     # ------------------------------------------------------------
 
-    result["origin_balance_change_ratio"] = (
-        result["origin_balance_change"].abs()
-        / (result["oldbalanceOrg"] + 1)
+    df["origin_balance_change_ratio"] = (
+        df["origin_balance_change"].abs()
+        / (df["oldbalanceOrg"] + 1)
     )
 
-    result["origin_balance_utilization"] = (
-        result["amount"]
-        / (result["oldbalanceOrg"] + result["amount"] + 1)
+    df["origin_balance_utilization"] = (
+        df["amount"]
+        / (df["oldbalanceOrg"] + df["amount"] + 1)
     )
 
     # ------------------------------------------------------------
     # Destination account behaviour
     # ------------------------------------------------------------
 
-    result["destination_balance_change_ratio"] = (
-        result["destination_balance_change"].abs()
-        / (result["oldbalanceDest"] + result["amount"] + 1)
+    df["destination_balance_change_ratio"] = (
+        df["destination_balance_change"].abs()
+        / (df["oldbalanceDest"] + df["amount"] + 1)
     )
 
     # ------------------------------------------------------------
     # Balance anomaly indicators
     # ------------------------------------------------------------
 
-    result["high_origin_balance_error"] = (
-        result["origin_balance_error_abs"] > 1
+    df["high_origin_balance_error"] = (
+        df["origin_balance_error_abs"] > 1
     ).astype(int)
 
-    result["high_destination_balance_error"] = (
-        result["destination_balance_error_abs"] > 1
+    df["high_destination_balance_error"] = (
+        df["destination_balance_error_abs"] > 1
     ).astype(int)
 
     # ------------------------------------------------------------
     # Transaction characteristics
     # ------------------------------------------------------------
 
-    result["is_large_transaction"] = (
-        result["amount"] >= result["amount"].quantile(0.99)
+    # Full-column thresholds computed once and reused below.
+    large_amount_threshold = df["amount"].quantile(0.99)
+    late_step_threshold = df["step"].quantile(0.90)
+
+    # TRANSFER/CASH_OUT activity reused by several indicators.
+    withdrawal_activity = (
+        (df["is_transfer"] == 1)
+        | (df["is_cash_out"] == 1)
+    )
+
+    df["is_large_transaction"] = (
+        df["amount"] >= large_amount_threshold
     ).astype(int)
 
-    result["is_zero_origin_before_withdrawal"] = (
-        (result["origin_zero_balance_before"] == 1)
-        & (result["amount"] > 0)
-        & (result["is_transfer"] + result["is_cash_out"] > 0)
+    df["is_zero_origin_before_withdrawal"] = (
+        (df["origin_zero_balance_before"] == 1)
+        & (df["amount"] > 0)
+        & withdrawal_activity
     ).astype(int)
 
     # ------------------------------------------------------------
     # Temporal features
     # ------------------------------------------------------------
 
-    result["step_mod_24"] = result["step"] % 24
+    df["step_mod_24"] = df["step"] % 24
 
-    result["is_late_step"] = (
-        result["step"] >= result["step"].quantile(0.90)
+    df["is_late_step"] = (
+        df["step"] >= late_step_threshold
     ).astype(int)
 
     # ------------------------------------------------------------
     # Interaction features
     # ------------------------------------------------------------
 
-    result["transfer_or_cashout"] = (
-        (result["is_transfer"] == 1)
-        | (result["is_cash_out"] == 1)
+    df["transfer_or_cashout"] = withdrawal_activity.astype(int)
+
+    df["large_transfer_or_cashout"] = (
+        (df["is_large_transaction"] == 1)
+        & (df["transfer_or_cashout"] == 1)
     ).astype(int)
 
-    result["large_transfer_or_cashout"] = (
-        (result["is_large_transaction"] == 1)
-        & (result["transfer_or_cashout"] == 1)
-    ).astype(int)
-
-    return result
+    return df
 
 
 def get_model_features(
@@ -152,6 +190,10 @@ def get_model_features(
 
     Account identifiers are excluded because their raw high-cardinality
     values are not suitable direct numerical model features.
+
+    On the 36-column feature-engineered dataset this returns the
+    33 model features (``isFraud``, ``type`` and, by default,
+    ``isFlaggedFraud`` are excluded).
 
     Parameters
     ----------

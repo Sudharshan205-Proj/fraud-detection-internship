@@ -8,11 +8,14 @@ feature preparation, scaling, and class-imbalance handling.
 from __future__ import annotations
 
 import pandas as pd
-from imblearn.over_sampling import SMOTE  # noqa: F401
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 TARGET_COLUMN = "isFraud"
+
+IDENTIFIER_COLUMNS = ["nameOrig", "nameDest"]
+
+CATEGORICAL_COLUMNS = ["type"]
 
 
 def split_features_target(
@@ -37,33 +40,28 @@ def prepare_categorical_features(
     X: pd.DataFrame,
 ) -> pd.DataFrame:
     """
-    One-hot encode categorical transaction-type variables.
+    Remove high-cardinality identifiers and one-hot encode the
+    categorical transaction-type variable.
 
-    Raw account identifiers are removed because they are
-    high-cardinality identifiers.
+    ``pd.get_dummies`` already returns a new frame, so no defensive
+    copy is made first.
     """
 
-    X = X.copy()
-
-    identifier_columns = [
-        column
-        for column in ["nameOrig", "nameDest"]
-        if column in X.columns
+    present_identifiers = [
+        column for column in IDENTIFIER_COLUMNS if column in X.columns
     ]
 
-    if identifier_columns:
-        X = X.drop(columns=identifier_columns)
+    if present_identifiers:
+        X = X.drop(columns=present_identifiers)
 
-    categorical_columns = [
-        column
-        for column in ["type"]
-        if column in X.columns
+    present_categorical = [
+        column for column in CATEGORICAL_COLUMNS if column in X.columns
     ]
 
-    if categorical_columns:
+    if present_categorical:
         X = pd.get_dummies(
             X,
-            columns=categorical_columns,
+            columns=present_categorical,
             drop_first=False,
             dtype=int,
         )
@@ -119,7 +117,11 @@ def scale_features(
     return X_train_scaled, X_test_scaled, scaler
 
 
-def apply_smote(X_train, y_train, random_state=42):
+def apply_smote(
+    X_train: pd.DataFrame,
+    y_train: pd.Series,
+    random_state: int = 42,
+) -> tuple[pd.DataFrame, pd.Series]:
     """
     Apply SMOTE to the training data only.
 
@@ -127,7 +129,7 @@ def apply_smote(X_train, y_train, random_state=42):
     minority-class samples so that small test datasets can still
     be processed safely.
     """
-    from imblearn.over_sampling import SMOTE  # noqa: F811
+    from imblearn.over_sampling import SMOTE
 
     minority_count = y_train.value_counts().min()
 

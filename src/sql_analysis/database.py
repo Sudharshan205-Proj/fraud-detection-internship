@@ -1,22 +1,34 @@
+"""
+SQLite database helpers for the PaySim processed dataset.
+"""
+
 import sqlite3
-from pathlib import Path
 
 import pandas as pd
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+from src.data_processing.process_data import (
+    PROCESSED_DIR,
+    PROCESSED_PATH,
+)
 
-DATA_PATH = PROJECT_ROOT / "data" / "processed" / "paysim_processed.csv"
-DATABASE_PATH = PROJECT_ROOT / "data" / "paysim.db"
+DATABASE_PATH = PROCESSED_DIR.parent / "paysim.db"
 
+# Rows imported into SQLite per chunk so the 6.3M-row CSV never has to
+# be materialised as a single in-memory pandas frame during import.
 CHUNK_SIZE = 100_000
 
 
 def create_database() -> None:
-    """Create the SQLite database from the processed PaySim dataset."""
+    """
+    Create the SQLite ``transactions`` table from the processed CSV.
 
-    if not DATA_PATH.exists():
+    The CSV is streamed in chunks of :data:`CHUNK_SIZE` rows and each
+    chunk is appended to the table, keeping peak memory bounded.
+    """
+
+    if not PROCESSED_PATH.exists():
         raise FileNotFoundError(
-            f"Processed dataset not found: {DATA_PATH}"
+            f"Processed dataset not found: {PROCESSED_PATH}"
         )
 
     DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -24,8 +36,8 @@ def create_database() -> None:
     with sqlite3.connect(DATABASE_PATH) as connection:
 
         csv_reader = pd.read_csv(
-            DATA_PATH,
-            chunksize=CHUNK_SIZE
+            PROCESSED_PATH,
+            chunksize=CHUNK_SIZE,
         )
 
         first_chunk = next(csv_reader)
@@ -34,7 +46,7 @@ def create_database() -> None:
             "transactions",
             connection,
             if_exists="replace",
-            index=False
+            index=False,
         )
 
         for chunk in csv_reader:
@@ -42,12 +54,13 @@ def create_database() -> None:
                 "transactions",
                 connection,
                 if_exists="append",
-                index=False
+                index=False,
             )
 
 
-def run_query(connection, query: str):
-    """Execute a SQL query using an existing SQLite connection.
+def run_query(connection: sqlite3.Connection, query: str) -> pd.DataFrame:
+    """
+    Execute a SQL query using an existing SQLite connection.
 
     Parameters
     ----------
@@ -64,30 +77,14 @@ def run_query(connection, query: str):
     """
 
     return pd.read_sql_query(query, connection)
-    """Execute a SQL query against the PaySim SQLite database.
 
-    Parameters
-    ----------
-    query : str
-        SQL query to execute.
 
-    Returns
-    -------
-    pandas.DataFrame
-        Query results.
+def get_connection() -> sqlite3.Connection:
     """
+    Return a connection to the PaySim SQLite database.
 
-    if not DATABASE_PATH.exists():
-        raise FileNotFoundError(
-            f"SQLite database not found: {DATABASE_PATH}"
-        )
-
-    with sqlite3.connect(DATABASE_PATH) as connection:  # noqa: PLR1704
-        return pd.read_sql_query(query, connection)
-
-
-def get_connection():
-    """Return a connection to the PaySim SQLite database."""
+    The caller is responsible for closing the returned connection.
+    """
 
     if not DATABASE_PATH.exists():
         raise FileNotFoundError(

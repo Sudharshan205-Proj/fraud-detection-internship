@@ -40,7 +40,8 @@ Their direct use could result in poor generalization because the identifiers hav
 
 ## 5. Feature Engineering
 
-The following features are created.
+The pipeline creates the following **15 engineered features** on top of
+the 9 retained original columns.
 
 ### Balance Change
 
@@ -106,7 +107,7 @@ The processed dataset is saved as:
 The resulting dataset contains:
 
 - 6,362,620 rows
-- 23 variables
+- 24 columns (9 original columns retained + 15 engineered features)
 
 The target distribution is preserved:
 
@@ -144,6 +145,6 @@ Its extremely sparse distribution requires additional assessment before deciding
 
 ## 10. Processing Status
 
-**Phase 2 data processing and feature engineering: Complete**
+**Phase 1 data processing: Complete**
 
 The resulting dataset is ready for exploratory analysis and machine-learning preparation.

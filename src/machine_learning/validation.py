@@ -4,38 +4,16 @@ Model validation and feature leakage analysis utilities.
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.inspection import permutation_importance
 
+from src.machine_learning.models import create_random_forest
 from src.machine_learning.prepare import TARGET_COLUMN
 
 IDENTIFIER_COLUMNS = [
     "nameOrig",
     "nameDest",
 ]
-
-
-def load_processed_dataset(path: str | Path) -> pd.DataFrame:
-    """
-    Load the processed PaySim dataset.
-    """
-    path = Path(path)
-
-    if not path.exists():
-        raise FileNotFoundError(f"Processed dataset not found: {path}")
-
-    df = pd.read_csv(path)
-
-    if TARGET_COLUMN not in df.columns:
-        raise ValueError(
-            f"Target column '{TARGET_COLUMN}' is missing from the dataset."
-        )
-
-    return df
-
 
 def identify_identifier_columns(
     df: pd.DataFrame,
@@ -60,8 +38,6 @@ def identify_suspicious_features(
     whose relationship with the target or transaction outcome warrants
     further investigation.
     """
-    suspicious_features = []
-
     known_risk_features = [
         "isFlaggedFraud",
         "origin_balance_error",
@@ -76,11 +52,11 @@ def identify_suspicious_features(
         "amount_to_destination_balance",
     ]
 
-    for feature in known_risk_features:
-        if feature in df.columns:
-            suspicious_features.append(feature)
-
-    return suspicious_features
+    return [
+        feature
+        for feature in known_risk_features
+        if feature in df.columns
+    ]
 
 
 def calculate_target_correlations(
@@ -110,17 +86,12 @@ def train_validation_random_forest(
     y_train: pd.Series,
     X_test: pd.DataFrame,
     y_test: pd.Series,
-) -> tuple[RandomForestClassifier, pd.Series]:
+) -> tuple[object, pd.Series]:
     """
     Train a Random Forest and calculate permutation importance
     on the held-out test data.
     """
-    model = RandomForestClassifier(
-        n_estimators=100,
-        random_state=42,
-        n_jobs=-1,
-        class_weight="balanced",
-    )
+    model = create_random_forest()
 
     model.fit(X_train, y_train)
 

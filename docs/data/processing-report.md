@@ -39,22 +39,39 @@ No missing-value imputation was required because the dataset contains no missing
 
 No duplicate removal was required because no exact duplicate rows were identified.
 
-Identifier columns were retained at this stage for further feature-engineering assessment.
+The high-cardinality account identifiers `nameOrig` and `nameDest` were removed from the processed dataset because they are identifiers rather than meaningful numerical predictors.
 
 The original fraud target `isFraud` was preserved without modification.
 
 The existing `isFlaggedFraud` variable was preserved for later usefulness and leakage assessment.
 
-## 5. Derived Features
+## 5. Output Structure
 
-The following balance-consistency features were created:
+The processed dataset contains **24 columns**:
+
+* **9 original columns retained:** `step`, `type`, `amount`, `oldbalanceOrg`, `newbalanceOrig`, `oldbalanceDest`, `newbalanceDest`, `isFraud`, `isFlaggedFraud`.
+
+  The account identifiers `nameOrig` and `nameDest` are not included.
+
+* **15 engineered features** created by the processing pipeline:
 
 - `origin_balance_change`
 - `destination_balance_change`
 - `origin_balance_error`
 - `destination_balance_error`
+- `origin_balance_error_abs`
+- `destination_balance_error_abs`
+- `origin_zero_balance_before`
+- `origin_zero_balance_after`
+- `destination_zero_balance_before`
+- `destination_zero_balance_after`
+- `amount_to_origin_balance`
+- `amount_to_destination_balance`
+- `is_transfer`
+- `is_cash_out`
+- `log_amount`
 
-These features quantify differences between transaction amounts and observed balance changes.
+These features quantify differences between transaction amounts, account balances, and observed balance changes.
 
 They will be investigated further during exploratory analysis and feature engineering.
 
@@ -62,7 +79,7 @@ They will be investigated further during exploratory analysis and feature engine
 
 **Processed rows:** 6,362,620
 
-**Processed columns:** 15
+**Processed columns:** 24
 
 **Output:**
 

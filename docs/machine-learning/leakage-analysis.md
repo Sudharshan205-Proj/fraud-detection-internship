@@ -2,7 +2,7 @@
 
 ## 1. Purpose
 
-This analysis investigates the features used by the fraud-detection models following the exceptionally strong Random Forest baseline results obtained during Phase 5.
+This analysis investigates the features used by the fraud-detection models following the exceptionally strong Random Forest baseline results obtained during Phase 6.
 
 The purpose is to determine whether the model's performance may be influenced by:
 

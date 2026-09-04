@@ -67,7 +67,7 @@ Threshold analysis was performed to determine whether a different threshold prov
 
 The complete threshold results are stored in:
 
-`docs/machine-learning/threshold-analysis.csv`
+`results/machine-learning/threshold-analysis.csv`
 
 The threshold producing the highest F1-score is treated as the preliminary preferred operating threshold.
 

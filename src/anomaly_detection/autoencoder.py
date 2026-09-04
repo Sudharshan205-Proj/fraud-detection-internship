@@ -2,12 +2,8 @@ from __future__ import annotations
 
 import numpy as np
 import tensorflow as tf
-from sklearn.metrics import (
-    f1_score,
-    precision_score,
-    recall_score,
-    roc_auc_score,
-)
+
+from src.machine_learning.metrics import classification_metrics
 
 
 def create_autoencoder(
@@ -118,25 +114,13 @@ def evaluate_autoencoder(
 ) -> dict:
     """
     Evaluate autoencoder anomaly detection.
+
+    Reconstruction error is used as the continuous score so that
+    ROC-AUC measures how well the error separates classes.
     """
-    return {
-        "precision": precision_score(
-            y_true,
-            y_pred,
-            zero_division=0,
-        ),
-        "recall": recall_score(
-            y_true,
-            y_pred,
-            zero_division=0,
-        ),
-        "f1_score": f1_score(
-            y_true,
-            y_pred,
-            zero_division=0,
-        ),
-        "roc_auc": roc_auc_score(
-            y_true,
-            reconstruction_errors,
-        ),
-    }
+    return classification_metrics(
+        y_true,
+        y_pred,
+        reconstruction_errors,
+        include_accuracy=False,
+    )

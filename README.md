@@ -1,6 +1,137 @@
 # Fraud Detection System
 
-An internship project that demonstrates the use of data analysis, machine learning, anomaly detection, and deep learning techniques to identify potentially fraudulent financial transactions.
+An internship project demonstrating data analysis, machine learning,
+anomaly detection, and model evaluation to identify potentially
+fraudulent financial transactions.
+
+The project uses one primary dataset throughout the case study:
+
+> **PaySim — Synthetic Financial Dataset for Fraud Detection**
+>
+> 6,362,620 transactions · 11 raw variables · 8,213 fraudulent
+> transactions (0.129% fraud rate)
+
+The raw and processed datasets are kept locally (`data/raw`,
+`data/processed`) and are excluded from Git because of their size.
+
+## Column and feature terminology
+
+The project is deliberately consistent about these numbers — do not
+use them interchangeably:
+
+| Concept | Definition |
+|---|---|
+| **Raw dataset** | 11 original PaySim columns (includes account identifiers). |
+| **Processed dataset** | 24 columns = **9 original columns retained** (identifiers removed) + **15 engineered features**. Saved as `data/processed/paysim_processed.csv`. |
+| **Feature-engineered dataset** | 24 processed columns + 12 behavioural features produced by `src/feature_engineering/features.py` = **36 columns**. |
+| **Model features** | The 33 features selected from the 36-column dataset (`isFraud`, `type` and, by default, `isFlaggedFraud` are excluded). |
+
+## Repository layout
+
+```text
+├── src/                    # Library code (imported as src.<package>)
+│   ├── data_processing/    # Canonical raw -> processed pipeline (24 cols)
+│   ├── feature_engineering/# Additional features (24 -> 36 cols)
+│   ├── machine_learning/   # Prepare, models, evaluation, optimization,
+│   │                       # validation, explainability, comparison
+│   ├── anomaly_detection/  # Isolation Forest + autoencoder pipeline
+│   ├── analysis/           # Fraud investigation / explainability reports
+│   └── sql_analysis/       # SQLite database creation + query helpers
+├── scripts/                # Runnable entry points (all data stages)
+├── tests/                  # pytest suite (unit + dataset-free e2e)
+├── notebooks/              # Jupyter inspection notebooks
+├── sql/                    # Documented SQL analysis scripts (SQLite)
+├── data/                   # Raw + processed data (gitignored)
+├── results/                # Generated artifacts (CSV/PNG/MD reports)
+├── docs/                   # Human-written project documentation
+├── app/  r/  tableau/      # Placeholders for later phases (10/11+)
+├── requirements.txt        # Pinned runtime dependencies
+└── pyproject.toml          # Packaging + pytest configuration
+```
+
+## Setup
+
+```bash
+# 1. Create and activate a virtual environment
+python -m venv .venv
+# Windows:  .venv\Scripts\activate      macOS/Linux: source .venv/bin/activate
+
+# 2. Install dependencies and the project itself
+pip install -r requirements.txt
+pip install -e .
+```
+
+Installing the project (`pip install -e .`) registers the `src`
+package so that `python scripts/...` and `python -m src....` run from
+any working directory without `PYTHONPATH` tricks.
+
+### Dataset
+
+Place the PaySim file at:
+
+```text
+data/raw/PS_20174392719_1491204439457_log.csv
+```
+
+Run the canonical processing pipeline to build the 24-column processed
+dataset and refresh `docs/data/processing-report.md`:
+
+```bash
+python -m src.data_processing.process_data
+```
+
+Optional `--max-rows N` row caps are available on most data-heavy entry
+points for quick sample-mode runs on modest hardware:
+
+```bash
+python scripts/train_baseline.py --max-rows 500000
+```
+
+## Running the analysis stages
+
+| Stage | Command |
+|---|---|
+| Process raw data (24-col processed CSV + report) | `python -m src.data_processing.process_data` |
+| Build SQLite database from processed CSV | `python -m src.sql_analysis.database` |
+| Check the SQLite database | `python scripts/check_database.py` |
+| Baseline models (Logistic Regression, Random Forest) | `python scripts/train_baseline.py [--max-rows N]` |
+| Random Forest held-out predictions | `python scripts/generate_random_forest_predictions.py [--max-rows N]` |
+| Threshold analysis (Phase 6) | `python scripts/model_optimization.py` |
+| Feature leakage / correlation analysis | `python scripts/leakage_analysis.py [--max-rows N]` |
+| Feature importance & explainability | `python scripts/model_explainability.py [--max-rows N]` |
+| Transaction-level investigation report | `python -m src.analysis.fraud_investigation [--max-rows N]` |
+| Anomaly pipeline (Isolation Forest + autoencoder) | `python -m src.anomaly_detection.pipeline [--max-rows N]` |
+| Model comparison report (Phase 8) | `python scripts/run_model_comparison.py` |
+
+SQL queries used for the relational-analysis stage live in `sql/`.
+Documented examples of how each phase maps to the internship
+curriculum are in `docs/phase-0/`.
+
+## Testing
+
+```bash
+python -m pytest            # full suite (unit + dataset-free e2e)
+python -m pytest tests/data -q
+```
+
+The suite never requires the 6.3M-row dataset: it uses synthetic
+PaySim-style frames generated by `tests/helpers.py`. See
+[docs/testing.md](docs/testing.md) for details.
+
+## Documentation
+
+| Document | Purpose |
+|---|---|
+| [docs/architecture.md](docs/architecture.md) | Repository layout, data flow, artifact conventions |
+| [docs/testing.md](docs/testing.md) | Test layout and how to extend the suite |
+| [docs/phase-0/project-requirements.md](docs/phase-0/project-requirements.md) | Project requirements and scope |
+| [docs/phase-0/curriculum-mapping.md](docs/phase-0/curriculum-mapping.md) | Internship curriculum coverage |
+| [docs/phase-1/](docs/phase-1/data-processing.md) | Per-phase reports: objective, deliverables, commands, status (phases 1-7, 9-16) |
+| [docs/data/](docs/data/) | Dataset, processing, and data-quality documentation |
+| [docs/sql/sql-analysis.md](docs/sql/sql-analysis.md) | SQL analysis workflow |
+| [docs/machine-learning/](docs/machine-learning/) | ML preparation, evaluation, explainability |
+| [docs/anomaly-detection/](docs/anomaly-detection/) | Anomaly-detection results |
+| [docs/final/](docs/final/) | Final case-study reports |
 
 ## Project Status
 
@@ -15,11 +146,20 @@ An internship project that demonstrates the use of data analysis, machine learni
 | Phase 6 — Supervised Machine Learning | Complete |
 | Phase 7 — Anomaly Detection | Complete |
 | Phase 8 — Model Comparison & Selection | Complete |
-| Phase 9 — Explainability & Fraud Investigation | Verification |
-| Phase 10 — Application Development | In Progress |
+| Phase 9 — Explainability & Fraud Investigation | complete |
+| Phase 10 — Application Development | complete |
 | Phase 11 — Visualization & Tableau | Pending |
 | Phase 12 — Testing & Validation | Pending |
 | Phase 13 — Deployment | Pending |
 | Phase 14 — Documentation | Pending |
 | Phase 15 — Final Report & Presentation | Pending |
 | Phase 16 — GitHub Finalization | Pending |
+
+The empty `app/`, `r/` and `tableau/` directories are intentional
+placeholders for the pending application, R-analysis, and Tableau
+phases.
+
+> **Important:** this is an internship-level educational system. Model
+> predictions identify transactions that may warrant investigation;
+> they are not proof that a transaction or customer is fraudulent, and
+> the synthetic PaySim results are not production banking performance.
