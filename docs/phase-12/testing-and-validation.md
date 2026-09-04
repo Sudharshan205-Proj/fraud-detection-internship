@@ -1,62 +1,87 @@
 # Phase 12 — Testing and Validation
 
-## Objective
+## 1. Objective
 
-Provide automated tests for the project's important components: data
-loading, validation, feature preparation, prediction output, evaluation
-calculations, and the application service layer.
+Phase 12 validates the Fraud Detection System as an integrated project.
 
-## Status
+The objective is to verify that the data-processing, feature-engineering, machine-learning, inference, application, and visualization components operate consistently and that important project assumptions are protected by automated tests.
 
-**Implemented** — the suite currently passes **98 tests** and never
-requires the 6.36M-row dataset. (The project-status table in the README
-still lists this phase as Pending; this document reflects the actual
-repository evidence.)
+The testing strategy is appropriate for an internship-level educational system and focuses on correctness, regression prevention, reproducibility, data integrity, model-input consistency, and application behavior.
 
-## What Was Produced
+---
 
-- **Test layout** — `tests/`:
+## 2. Testing Strategy
 
-  - `tests/helpers.py` — deterministic synthetic PaySim builders
-    (`make_synthetic_raw_rows`, `make_processed_frame`) used by the
-    dataset-free end-to-end suites
-  - `tests/data/`, `tests/sql/`, `tests/anomaly_detection/` — area-scoped
-    unit tests
-  - `tests/test_*.py` — feature-level tests (processing, feature
-    engineering, ML preparation/models, model comparison, explainability,
-    fraud investigation, baselines, threshold analysis)
-  - `tests/app/` — application-service tests (in the primary project
-    folder; added with Phase 10)
+Testing is divided into the following areas:
 
-- **Dataset-free end-to-end suites**:
+1. Data validation
+2. Feature-engineering validation
+3. Model validation
+4. Application validation
+5. Reproducibility validation
+6. Leakage prevention
+7. Regression testing
+8. Manual application validation
+9. Visualization validation
 
-  - `tests/test_end_to_end_pipeline.py` — raw CSV → processing →
-    24-column layout → model preparation → training → evaluation
-  - `tests/anomaly_detection/test_anomaly_detection.py` — Isolation
-    Forest and autoencoder trained on a synthetic processed frame with
-    metric-contract checks
-  - `tests/test_threshold_analysis.py` — predictions CSV → threshold
-    optimization workflow
+The project uses `pytest` for automated Python testing.
 
-- **Configuration** — `pyproject.toml` (`[tool.pytest.ini_options]`
-  with `pythonpath = ["."]` and `testpaths = ["tests"]`), so tests run
-  with no `PYTHONPATH` setup.
+---
 
-## How to Reproduce
+## 3. Data Validation
 
-```bash
-python -m pytest                 # full suite
-python -m pytest tests/data -q   # single area
-```
+Data validation tests verify important assumptions about transaction data.
 
-## What Is Not Covered
+The validation checks include:
 
-- Full-dataset runs (they require the local PaySim file and are not part
-  of the automated suite).
-- The Streamlit UI layer itself (its wiring is still in progress —
-  see `docs/phase-10/application-development.md`).
+- Required columns
+- Missing values
+- Duplicate rows
+- Numeric data types
+- Categorical transaction type
+- Binary fraud target
+- Binary flagged-fraud indicator
+- Non-negative transaction amounts
+- Non-negative account balances
 
-## Related Documentation
+The automated tests use small synthetic PaySim-style data so that validation does not require loading the full dataset.
 
-- `docs/testing.md` — test layout, run commands, and how to extend the suite
-- `docs/phase-14/documentation.md` — documentation phase index
+---
+
+## 4. Feature Validation
+
+The feature-engineering validation checks that:
+
+- Feature engineering preserves row count.
+- Required engineered features are produced.
+- The model feature set contains exactly 33 features.
+- The fraud target is excluded.
+- Transaction type is excluded from the final model feature set.
+- `isFlaggedFraud` is excluded by default from the final model feature set.
+
+The final model therefore receives a controlled feature schema rather than an uncontrolled set of input columns.
+
+---
+
+## 5. Model Validation
+
+The final model is validated for:
+
+- Successful model loading
+- Correct model type
+- Correct feature count
+- Unique feature names
+- Absence of the fraud target from model features
+- Absence of raw transaction type from model features
+- Presence of persisted inference thresholds
+- Numeric inference thresholds
+- Consistency between the model service and persisted feature schema
+
+The expected final model feature count is:
+
+**33 features**
+
+The model artifact is:
+
+```text
+models/random_forest_model.joblib
