@@ -22,6 +22,11 @@ from pathlib import Path
 import joblib
 import pandas as pd
 
+# Add project root to Python path
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.append(str(ROOT))
+    
 from src.data_processing.process_data import (
     engineer_features as engineer_processed_features,
 )
@@ -29,11 +34,6 @@ from src.feature_engineering.features import (
     engineer_features as engineer_behavioural_features,
 )
 from src.feature_engineering.features import get_model_features
-
-# Add project root to Python path
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.append(str(ROOT))
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
