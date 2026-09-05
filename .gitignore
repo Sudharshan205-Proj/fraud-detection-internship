@@ -6,7 +6,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Virtual environment
+# Virtual environments
 .venv/
 venv/
 env/
@@ -23,14 +23,16 @@ dist/
 # ============================================================
 
 .ipynb_checkpoints/
+*.nbconvert.ipynb
+.jupyter-runtime/
 
 
 # ============================================================
 # Data
 # ============================================================
 
-# Raw and processed datasets are kept locally unless explicitly
-# selected for version control.
+# Raw and processed PaySim datasets are intentionally NOT
+# committed because they are hundreds of MB to multiple GB.
 data/raw/*
 data/processed/*
 
@@ -40,14 +42,38 @@ data/processed/*
 
 
 # ============================================================
+# Large Data / Archive Files
+# ============================================================
+
+# Prevent accidentally committing large alternative data formats
+*.parquet
+*.feather
+*.arrow
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+*.7z
+
+
+# ============================================================
 # Machine Learning
 # ============================================================
 
+# Generic model formats that should not be committed
 *.pkl
 *.pickle
 *.h5
 *.keras
 *.onnx
+
+# IMPORTANT:
+# Do NOT ignore *.joblib globally.
+#
+# models/random_forest_model.joblib is required by the
+# deployed Streamlit application and must remain visible
+# to Git if it is within an acceptable repository/deployment size.
 
 
 # ============================================================
@@ -78,6 +104,10 @@ Thumbs.db
 
 .vscode/
 
+# JetBrains IDEs
+.idea/
+*.iml
+
 
 # ============================================================
 # R
@@ -96,73 +126,88 @@ Thumbs.db
 
 
 # ============================================================
-# Temporary files
+# Temporary Files
 # ============================================================
 
 *.tmp
 *.temp
 
+# Excel temporary files
+~$*.xlsx
+~$*.xls
+
+# R Markdown generated files
+*_files/
+
+# Backup / editor files
+*.bak
+*.swp
+*.swo
+
+
 # ============================================================
-# Generated project outputs
+# Generated Project Outputs
 # ============================================================
 
 outputs/
 reports/generated/
 
-# Excel temporary files
-~$*.xlsx
-~$*.xls
-*.csv
-
-# R Markdown generated files
-*_files/
 
 # ============================================================
-# Testing
+# Generated Machine-Learning CSV Artifacts
 # ============================================================
 
-.pytest_cache/
-.coverage
-htmlcov/
+# These can become large and are reproducible from the pipeline.
+results/machine-learning/*.csv
+docs/machine-learning/explainability/*.csv
+results/model_comparison/*.csv
 
 
 # ============================================================
-# SQLite databases
+# Large Explainability Artifact
+# ============================================================
+
+# This is currently ~2.18 GB and MUST NOT enter Git.
+docs/machine-learning/explainability/fraud-investigation-report.csv
+
+
+# ============================================================
+# Phase 11 - Visualization Data
+# ============================================================
+
+# Visualization datasets are intentional project deliverables.
+# These are currently small curated CSVs.
+
+!data/visualization/
+!data/visualization/*.csv
+
+
+# ============================================================
+# Phase 11 - Visualization Figures
+# ============================================================
+
+!reports/
+!reports/figures/
+!reports/figures/*.png
+
+
+# ============================================================
+# Tableau
+# ============================================================
+
+# Keep actual Tableau workbook (.twb) visible/tracked.
+
+# Tableau lock files
+*.twb.lock
+
+# Tableau temporary/backup files
+tableau/*.twb~
+
+
+# ============================================================
+# SQLite Databases
 # ============================================================
 
 data/*.db
 data/*.sqlite
 data/*.sqlite3
-
-
-# ============================================================
-# Additional temporary files
-# ============================================================
-
-*.nbconvert.ipynb
-*.bak
-*.swp
-*.swo
-
-#============================================================
-
-.freebuff/
-.jupyter-runtime/
-
-# ============================================================
-# Phase 11 - Visualization data
-# ============================================================
-
-!data/visualization/
-!data/visualization/*.csv
-
-# Phase 11 generated figures
-!reports/
-!reports/figures/
-!reports/figures/*.png
-
-# ============================================================
-# Tableau temporary/backup files
-# ============================================================
-
-~*.*

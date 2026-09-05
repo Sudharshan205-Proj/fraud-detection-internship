@@ -127,8 +127,13 @@ def synthetic_processed_frame():
 def scaled_anomaly_splits(synthetic_processed_frame):
     X, y = prepare_features(synthetic_processed_frame)
 
+    # The synthetic frame follows the canonical 24-column processed schema.
+    # prepare_features drops the isFraud target and one-hot encodes type
+    # into the 5 PaySim categories, so the matrix width is fixed:
+    # 24 - 1 (isFraud) - 1 (type) + 5 (type dummies) = 27.
     assert X.ndim == 2
     assert X.shape[0] == 120
+    assert X.shape[1] == 27
     assert len(y) == 120
 
     (

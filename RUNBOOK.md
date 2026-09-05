@@ -348,7 +348,7 @@ python -m src.anomaly_detection.pipeline
 ```text
 Loading processed PaySim dataset...
 Dataset shape: (6362620, 24)
-Feature matrix shape: (6362620, 29)
+Feature matrix shape: (6362620, 27)
 
 Running Isolation Forest...
 Isolation Forest Results
@@ -429,13 +429,13 @@ python -m pytest tests/test_model_comparison.py -q
 python scripts/model_explainability.py [--max-rows N]
 ```
 
-**Expected output shape:**
+**Expected output shape:**1
 
 ```text
 Loading processed dataset...
 Rows: 6,362,620
 Columns: 24
-Prepared features: 28
+Prepared features: 27
 
 Training Random Forest for explainability...
 Model trained successfully.
@@ -466,7 +466,7 @@ Rows: 6,362,620
 Columns: 24
 
 Preparing model features...
-Feature matrix: (6362620, 28)
+Feature matrix: (6362620, 27)
 
 Training Random Forest...
 Model trained successfully.
@@ -540,7 +540,7 @@ Schema file: models\model_features.json
 ### 10.2 Run the Streamlit UI
 
 ```bash
-streamlit run app/streamlit_app.py
+python -m streamlit run app/streamlit_app.py
 ```
 
 **Expected output:** the dev server starts at
@@ -675,7 +675,7 @@ written to `reports/figures/`: `r_fraud_by_type.png`,
 ### 11.5 Knit the R Markdown report
 
 ```bash
-Rscript -e 'rmarkdown::render("r/fraud_analysis.Rmd")'
+Rscript -e "rmarkdown::render("r/fraud_analysis.Rmd")"
 ```
 
 **Expected output:** `r/fraud_analysis.html` is produced (or knitted via

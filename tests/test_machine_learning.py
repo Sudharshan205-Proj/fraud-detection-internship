@@ -191,7 +191,7 @@ def test_smote_increases_minority_class(sample_data):
 def test_logistic_regression_creation():
     model = create_logistic_regression()
 
-    assert model.max_iter == 1000
+    assert model.max_iter == 5000
 
 
 def test_random_forest_creation():
