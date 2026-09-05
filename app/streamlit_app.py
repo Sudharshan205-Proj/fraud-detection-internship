@@ -2,20 +2,11 @@
 Phase 10 - Fraud Detection Streamlit Application.
 """
 
-import os
-import sys
 
 import streamlit as st
+from utils import get_investigation_priority, get_priority_description
 
-import app
-from app.utils import get_investigation_priority, get_priority_description
-
-# Automatically find and add the root repository directory to the Python path
-# to resolve the 'ModuleNotFoundError: No module named app' error.
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if ROOT_DIR not in sys.path:
-    sys.path.append(ROOT_DIR)
-
+from app import model_service
 
 st.set_page_config(
     page_title="Fraud Detection System",
@@ -27,7 +18,7 @@ st.set_page_config(
 @st.cache_resource
 def get_model_service():
     """Load and cache the fraud detection model service."""
-    return app.model_service.FraudModelService()
+    return model_service.FraudModelService()
 
 
 def main():
