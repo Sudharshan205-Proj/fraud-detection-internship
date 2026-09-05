@@ -16,7 +16,7 @@ def create_logistic_regression(random_state: int = 42):
     """
     return LogisticRegression(
         random_state=random_state,
-        max_iter=1000,
+        max_iter=5000,
         class_weight="balanced",
     )
 

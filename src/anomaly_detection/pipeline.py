@@ -4,8 +4,14 @@ import argparse
 
 import numpy as np
 import pandas as pd
+import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+
+RANDOM_STATE = 42
+
+np.random.seed(RANDOM_STATE)
+tf.random.set_seed(RANDOM_STATE)
 
 from src.anomaly_detection.autoencoder import (
     calculate_reconstruction_error,
@@ -123,7 +129,7 @@ def run_isolation_forest(
     """
 
     model = create_isolation_forest(
-        contamination=0.01,
+        contamination=0.0013,
         random_state=42,
     )
 
@@ -263,6 +269,7 @@ def main(max_rows: int | None = None) -> None:
         X,
         y,
     )
+    del X
 
     print("\nRunning Isolation Forest...")
 

@@ -85,7 +85,7 @@ def train_final_model():
 
     print("\nSplitting data...")
 
-    X_train, X_test, y_train, y_test = train_test_split_data(  # noqa: RUF059
+    X_train, X_test, y_train, y_test = train_test_split_data(
         X,
         y,
         test_size=0.2,

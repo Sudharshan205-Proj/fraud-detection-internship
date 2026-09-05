@@ -9,6 +9,7 @@ from src.machine_learning.models import (
 )
 from src.machine_learning.prepare import (
     prepare_categorical_features,
+    scale_features,
     split_features_target,
     train_test_split_data,
 )
@@ -35,7 +36,19 @@ def prepare_data(max_rows: int | None = None):
         test_size=0.2,
     )
 
-    return X_train, X_test, y_train, y_test
+    X_train_scaled, X_test_scaled, _ = scale_features(
+        X_train,
+        X_test,
+    )
+
+    return (
+        X_train,
+        X_test,
+        X_train_scaled,
+        X_test_scaled,
+        y_train,
+        y_test,
+    )
 
 
 def run_baseline_models(max_rows: int | None = None):
@@ -50,7 +63,14 @@ def run_baseline_models(max_rows: int | None = None):
     if max_rows is not None:
         print(f"Sample mode active: using at most {max_rows:,} rows.")
 
-    X_train, X_test, y_train, y_test = prepare_data(max_rows=max_rows)
+    (
+        X_train,
+        X_test,
+        X_train_scaled,
+        X_test_scaled,
+        y_train,
+        y_test,
+    ) = prepare_data(max_rows=max_rows)
 
     models = {
         "Logistic Regression": create_logistic_regression(),
@@ -62,15 +82,22 @@ def run_baseline_models(max_rows: int | None = None):
     for name, model in models.items():
         print(f"\nTraining {name}...")
 
+        if name == "Logistic Regression":
+            train_features = X_train_scaled
+            test_features = X_test_scaled
+        else:
+            train_features = X_train
+            test_features = X_test
+
         trained_model = train_model(
             model,
-            X_train,
+            train_features,
             y_train,
         )
 
         metrics = evaluate_model(
             trained_model,
-            X_test,
+            test_features,
             y_test,
         )
 
