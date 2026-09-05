@@ -3,10 +3,9 @@ Phase 10 - Fraud Detection Streamlit Application.
 """
 
 
+import model_service
 import streamlit as st
 from utils import get_investigation_priority, get_priority_description
-
-from app import model_service
 
 st.set_page_config(
     page_title="Fraud Detection System",
