@@ -17,7 +17,7 @@ st.set_page_config(
 @st.cache_resource
 def get_model_service():
     """Load and cache the fraud detection model service."""
-    return model_services.model_service.FraudModelService()
+    return model_services.FraudModelService()
 
 
 def main():
