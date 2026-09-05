@@ -194,7 +194,7 @@ def test_fixed_random_seed_is_documented():
 
 
 def test_project_uses_expected_feature_count():
-    from app.model_service import FraudModelService
+    from app.model_services import FraudModelService
 
     service = FraudModelService()
 

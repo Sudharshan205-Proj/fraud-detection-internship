@@ -4,7 +4,7 @@ Phase 12 - Application and inference validation tests.
 
 import pytest
 
-from app.model_service import FraudModelService
+from app.model_services import FraudModelService
 from app.utils import (
     get_investigation_priority,
     get_priority_description,

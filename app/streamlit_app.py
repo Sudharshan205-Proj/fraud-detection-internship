@@ -6,7 +6,7 @@ Phase 10 - Fraud Detection Streamlit Application.
 import streamlit as st
 from utils import get_investigation_priority, get_priority_description
 
-import app.model_service
+import app.model_services
 
 st.set_page_config(
     page_title="Fraud Detection System",
@@ -18,7 +18,7 @@ st.set_page_config(
 @st.cache_resource
 def get_model_service():
     """Load and cache the fraud detection model service."""
-    return app.model_service.model_service.FraudModelService()
+    return app.model_services.model_service.FraudModelService()
 
 
 def main():

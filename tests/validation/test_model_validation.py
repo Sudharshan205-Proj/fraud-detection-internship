@@ -4,7 +4,7 @@ Phase 12 - Final model validation tests.
 
 import json
 
-from app.model_service import FraudModelService
+from app.model_services import FraudModelService
 
 EXPECTED_FEATURE_COUNT = 33
 

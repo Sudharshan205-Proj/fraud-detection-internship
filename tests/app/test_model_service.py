@@ -4,7 +4,7 @@ Tests for the Phase 10 fraud-model inference service.
 
 import pytest
 
-from app.model_service import FraudModelService
+from app.model_services import FraudModelService
 
 
 @pytest.fixture
