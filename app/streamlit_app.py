@@ -6,9 +6,8 @@ import os
 import sys
 
 import streamlit as st
-
-from app.model_service import FraudModelService
-from app.utils import (
+from model_service import FraudModelService
+from utils import (
     get_investigation_priority,
     get_priority_description,
 )
