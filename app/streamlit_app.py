@@ -3,9 +3,17 @@ Phase 10 - Fraud Detection Streamlit Application.
 """
 
 
-import model_services
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+    
 import streamlit as st
-from utils import get_investigation_priority, get_priority_description
+
+from app import model_services
+from app.utils import get_investigation_priority, get_priority_description
 
 st.set_page_config(
     page_title="Fraud Detection System",

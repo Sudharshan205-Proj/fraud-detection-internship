@@ -10,7 +10,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 MODEL_PATH = PROJECT_ROOT / "models" / "random_forest_model.joblib"
 SCHEMA_PATH = PROJECT_ROOT / "models" / "model_features.json"
 APP_PATH = PROJECT_ROOT / "app" / "streamlit_app.py"
-MODEL_SERVICE_PATH = PROJECT_ROOT / "app" / "model_service.py"
+MODEL_SERVICE_PATH = PROJECT_ROOT / "app" / "model_services.py"
 UTILS_PATH = PROJECT_ROOT / "app" / "utils.py"
 REQUIREMENTS_PATH = PROJECT_ROOT / "requirements.txt"
 
