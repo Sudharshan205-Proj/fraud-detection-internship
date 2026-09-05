@@ -37,7 +37,12 @@ src/
 │   ├── validation.py                  # leakage / correlation analysis
 │   ├── explainability.py              # feature importance + plots
 │   ├── model_comparison.py            # comparison table + charts
-│   └── (no entry points — those live in scripts/)
+│   ├── output.py                      # shared artifact-path helper
+│   └── train_final_model.py           # final model + schema export
+├── app/
+│   ├── model_service.py               # inference service (33-feature schema)
+│   ├── streamlit_app.py               # Phase 10 UI
+│   └── utils.py                       # investigation-priority helpers
 ├── anomaly_detection/
 │   ├── isolation_forest.py            # Isolation Forest helpers
 │   ├── autoencoder.py                 # Keras autoencoder helpers
@@ -53,17 +58,22 @@ scripts/                               # all entry points
 ├── model_explainability.py            # Phase 9 feature importance
 ├── run_model_comparison.py            # Phase 8 comparison (4 models)
 ├── check_database.py                  # SQLite inspection
+├── generate_visualization_data.py     # Phase 11 compact datasets
+└── create_visualizations.py           # Phase 11 Python charts
 
 tests/
 ├── helpers.py                         # synthetic PaySim frame builders
 ├── data/  sql/  anomaly_detection/    # area-scoped tests
+├── app/                               # model service + app utilities
+├── validation/                        # Phase 12 validation suite
 └── test_*.py                          # feature tests (root level)
 
 notebooks/   sql/                      # Jupyter inspection, SQL queries
 data/        raw + processed CSV       # gitignored
 results/     generated CSV/PNG/MD      # machine-learning artifacts
+models/      final model + schema      # gitignored artifacts
 docs/        human-written reports     # phase + topic documentation
-app/ r/ tableau/                       # placeholders (later phases)
+r/  tableau/                           # R analysis/report, Tableau workbook
 ```
 
 ## 3. Package responsibilities
@@ -96,7 +106,10 @@ data/processed/paysim_processed.csv   24 columns (9 original + 15 engineered)
         ├── scripts/leakage_analysis.py ──► correlation CSV
         ├── scripts/model_explainability.py ──► importance CSV/PNG
         ├── src.analysis.fraud_investigation ──► investigation CSV
-        └── src.anomaly_detection.pipeline ──► Isolation Forest + autoencoder
+        ├── src.anomaly_detection.pipeline ──► Isolation Forest + autoencoder
+        └── src.machine_learning.train_final_model ──► models/ (model + schema)
+
+data/visualization/  (compact aggregates, chunked) ──► reports/figures/ + Tableau
 ```
 
 ## 5. Artifact conventions
@@ -113,6 +126,10 @@ data/processed/paysim_processed.csv   24 columns (9 original + 15 engineered)
   * `docs/machine-learning/explainability/` — feature-importance
     CSV/PNG and the fraud-investigation report, referenced by
     `model-explainability.md`.
+* `models/random_forest_model.joblib` and `models/model_features.json`
+  are the final-model artifacts consumed by the application; both are
+  committed deliberately so the app works from a fresh clone (they can
+  always be regenerated with `train_final_model.py`).
 * `data/*.csv`, `*.png` regenerable artifacts are gitignored except
   where they were deliberately committed earlier; regenerating them is
   always possible with the scripts in section 6 of the README.

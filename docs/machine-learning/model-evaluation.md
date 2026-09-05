@@ -182,4 +182,6 @@ However, final model selection will only be made after:
 
 **Preliminary best model: Random Forest**
 
-**Final model selection: Pending validation**
+**Final model selection: Complete — Random Forest**
+(see `docs/machine-learning/final-model-selection.md` and the Phase 8
+comparison report for the selection rationale and caveats)

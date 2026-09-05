@@ -7,6 +7,8 @@ python -m pytest                      # everything
 python -m pytest tests/data -q        # data-processing tests only
 python -m pytest tests/sql -q         # SQLite query tests
 python -m pytest tests/anomaly_detection -q
+python -m pytest tests/app -q         # Phase 10 application tests
+python -m pytest tests/validation -q  # Phase 12 validation suite
 python -m pytest tests/test_end_to_end_pipeline.py -q
 python -m pytest tests/test_threshold_analysis.py -q
 ```
@@ -29,6 +31,17 @@ tests/
 │   └── test_sql_analysis.py          # in-memory SQLite query tests
 ├── anomaly_detection/
 │   └── test_anomaly_detection.py     # unit tests + anomaly e2e runs
+├── app/
+│   ├── test_model_service.py         # Phase 10 inference service
+│   ├── test_streamlit_app.py         # app module imports
+│   └── test_utils.py                 # investigation-priority helpers
+├── validation/                       # Phase 12 validation suite
+│   ├── test_data_validation.py       # data assumptions
+│   ├── test_feature_validation.py    # feature-schema contract
+│   ├── test_model_validation.py      # final model + schema checks
+│   ├── test_application_validation.py# app end-to-end behaviour
+│   ├── test_deployment_validation.py # artifacts + requirements
+│   └── test_reproducibility.py       # split reproducibility / leakage
 ├── test_baseline_models.py           # model factories, evaluation
 ├── test_feature_engineering.py       # 36-column feature stage
 ├── test_machine_learning.py          # prepare/split/SMOTE/threshold units

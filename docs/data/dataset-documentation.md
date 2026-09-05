@@ -226,7 +226,7 @@ The dataset documentation is supported by the following project documents:
 
 * **Data Dictionary:** `docs/data/data-dictionary.md`
 * **Data Quality Report:** `docs/data/data-quality-report.md`
-* **Initial Dataset Inspection:** `notebooks/01_initial_dataset_inspection.ipynb`
+* **Initial Dataset Inspection:** `notebooks/01_paysim_initial_inspection.ipynb`
 
 These documents provide progressively more detailed information about the dataset structure, quality, and initial findings.
 
@@ -244,10 +244,10 @@ These documents provide progressively more detailed information about the datase
 | Class-distribution assessment    | Complete |
 | Variable documentation           | Complete |
 | Data-quality documentation       | Complete |
-| Data cleaning                    | Pending  |
-| Feature engineering              | Pending  |
-| Model preparation                | Pending  |
-| Machine learning                 | Pending  |
+| Data cleaning                    | Complete |
+| Feature engineering              | Complete |
+| Model preparation                | Complete |
+| Machine learning                 | Complete |
 
 ---
 

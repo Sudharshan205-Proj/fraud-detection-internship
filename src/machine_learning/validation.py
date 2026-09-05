@@ -5,9 +5,7 @@ Model validation and feature leakage analysis utilities.
 from __future__ import annotations
 
 import pandas as pd
-from sklearn.inspection import permutation_importance
 
-from src.machine_learning.models import create_random_forest
 from src.machine_learning.prepare import TARGET_COLUMN
 
 IDENTIFIER_COLUMNS = [
@@ -79,35 +77,3 @@ def calculate_target_correlations(
     )
 
     return correlations
-
-
-def train_validation_random_forest(
-    X_train: pd.DataFrame,
-    y_train: pd.Series,
-    X_test: pd.DataFrame,
-    y_test: pd.Series,
-) -> tuple[object, pd.Series]:
-    """
-    Train a Random Forest and calculate permutation importance
-    on the held-out test data.
-    """
-    model = create_random_forest()
-
-    model.fit(X_train, y_train)
-
-    importance = permutation_importance(
-        model,
-        X_test,
-        y_test,
-        scoring="f1",
-        n_repeats=3,
-        random_state=42,
-        n_jobs=-1,
-    )
-
-    importance_series = pd.Series(
-        importance.importances_mean,
-        index=X_test.columns,
-    ).sort_values(ascending=False)
-
-    return model, importance_series

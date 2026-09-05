@@ -256,10 +256,7 @@ def main() -> None:
 
     by_type = (
         dashboard.groupby("transaction_type", as_index=False)
-        .agg(
-            total_transactions=("transaction_count", "sum"),
-            fraud_transactions=("transaction_count", lambda x: 0),
-        )
+        .agg(total_transactions=("transaction_count", "sum"))
     )
 
     fraud_by_type = (
@@ -269,7 +266,6 @@ def main() -> None:
         .rename("fraud_transactions")
     )
 
-    by_type = by_type.drop(columns=["fraud_transactions"])
     by_type = by_type.join(fraud_by_type, on="transaction_type")
     by_type["fraud_transactions"] = (
         by_type["fraud_transactions"].fillna(0).astype(int)

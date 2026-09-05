@@ -74,10 +74,14 @@ The threshold uses the 99th percentile.
 
 | Metric    | Score    |
 | --------- | -------: |
-| Precision | 0.089292 |
-| Recall    | 0.742544 |
-| F1-score  | 0.159415 |
-| ROC-AUC   | 0.941359 |
+| Precision | 0.085778 |
+| Recall    | 0.722459 |
+| F1-score  | 0.153349 |
+| ROC-AUC   | 0.943997 |
+
+The recorded values match `results/model_comparison/model_comparison.csv`
+(the verified Phase 8 comparison run). Autoencoder metrics vary slightly
+between runs because of neural-network weight initialization.
 
 ---
 

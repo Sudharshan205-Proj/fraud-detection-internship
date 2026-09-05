@@ -4,6 +4,14 @@ Model inference service for the Fraud Detection application.
 Phase 10:
 Loads the finalized Random Forest model and performs fraud
 prediction using the same 33-feature schema used during training.
+
+Feature engineering reuses the shared pipeline modules
+(``src.data_processing.process_data.engineer_features`` and
+``src.feature_engineering.features.engineer_features``) so the
+application cannot drift from the training-time definitions. The
+dataset-level thresholds used by the behavioural features are supplied
+from the persisted inference schema rather than recomputed from a
+single transaction.
 """
 
 from __future__ import annotations
@@ -12,13 +20,20 @@ import json
 from pathlib import Path
 
 import joblib
-import numpy as np
 import pandas as pd
 
+from src.data_processing.process_data import (
+    engineer_features as engineer_processed_features,
+)
+from src.feature_engineering.features import (
+    engineer_features as engineer_behavioural_features,
+)
 from src.feature_engineering.features import get_model_features
 
-MODEL_PATH = Path("models/random_forest_model.joblib")
-FEATURE_SCHEMA_PATH = Path("models/model_features.json")
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+MODEL_PATH = PROJECT_ROOT / "models" / "random_forest_model.joblib"
+FEATURE_SCHEMA_PATH = PROJECT_ROOT / "models" / "model_features.json"
 
 
 class FraudModelService:
@@ -151,190 +166,6 @@ class FraudModelService:
 
         return pd.DataFrame([transaction])
 
-    def _engineer_transaction_features(
-        self,
-        df: pd.DataFrame,
-    ) -> pd.DataFrame:
-        """
-        Recreate the engineered features required by the model.
-        """
-
-        # Required processed-dataset flag.
-        df["isFlaggedFraud"] = 0
-
-        # Balance changes (signs match src.data_processing.process_data).
-        df["origin_balance_change"] = (
-            df["oldbalanceOrg"]
-            - df["newbalanceOrig"]
-        )
-
-        df["destination_balance_change"] = (
-            df["newbalanceDest"]
-            - df["oldbalanceDest"]
-        )
-
-        # Balance errors (same definitions as the processing pipeline).
-        df["origin_balance_error"] = (
-            df["origin_balance_change"]
-            - df["amount"]
-        )
-
-        df["destination_balance_error"] = (
-            df["destination_balance_change"]
-            - df["amount"]
-        )
-
-        df["origin_balance_error_abs"] = (
-            df["origin_balance_error"].abs()
-        )
-
-        df["destination_balance_error_abs"] = (
-            df["destination_balance_error"].abs()
-        )
-
-        # Zero-balance indicators.
-        df["origin_zero_balance_before"] = (
-            df["oldbalanceOrg"] == 0
-        ).astype(int)
-
-        df["origin_zero_balance_after"] = (
-            df["newbalanceOrig"] == 0
-        ).astype(int)
-
-        df["destination_zero_balance_before"] = (
-            df["oldbalanceDest"] == 0
-        ).astype(int)
-
-        df["destination_zero_balance_after"] = (
-            df["newbalanceDest"] == 0
-        ).astype(int)
-
-        # Transaction type indicators.
-        df["is_transfer"] = (
-            df["type"] == "TRANSFER"
-        ).astype(int)
-
-        df["is_cash_out"] = (
-            df["type"] == "CASH_OUT"
-        ).astype(int)
-
-        # Log amount.
-        df["log_amount"] = np.log1p(
-            df["amount"]
-        )
-
-        # Ratio features.
-        df["amount_to_origin_balance"] = (
-            df["amount"]
-            / (df["oldbalanceOrg"] + 1)
-        )
-
-        df["amount_to_destination_balance"] = (
-            df["amount"]
-            / (df["oldbalanceDest"] + 1)
-        )
-
-        # Same definition as src.feature_engineering.features.
-        df["amount_log_ratio"] = df["log_amount"]
-
-        df["origin_balance_change_ratio"] = (
-            df["origin_balance_change"].abs()
-            / (df["oldbalanceOrg"] + 1)
-        )
-
-        df["origin_balance_utilization"] = (
-            df["amount"]
-            / (
-                df["oldbalanceOrg"]
-                + df["amount"]
-                + 1
-            )
-        )
-
-        df["destination_balance_change_ratio"] = (
-            df["destination_balance_change"].abs()
-            / (
-                df["oldbalanceDest"]
-                + df["amount"]
-                + 1
-            )
-        )
-
-        # Error flags.
-        df["high_origin_balance_error"] = (
-            df["origin_balance_error_abs"] > 1
-        ).astype(int)
-
-        df["high_destination_balance_error"] = (
-            df["destination_balance_error_abs"] > 1
-        ).astype(int)
-
-        # Use persisted training thresholds.
-        large_transaction_threshold = (
-            self.inference_thresholds[
-                "large_transaction_amount"
-            ]
-        )
-
-        late_step_threshold = (
-            self.inference_thresholds[
-                "late_step"
-            ]
-        )
-
-        df["is_large_transaction"] = (
-            df["amount"]
-            >= large_transaction_threshold
-        ).astype(int)
-
-        df["is_late_step"] = (
-            df["step"]
-            >= late_step_threshold
-        ).astype(int)
-
-        # Zero-origin withdrawal indicator.
-        df["is_zero_origin_before_withdrawal"] = (
-            (
-                df["origin_zero_balance_before"] == 1
-            )
-            & (df["amount"] > 0)
-            & (
-                (
-                    df["is_transfer"] == 1
-                )
-                | (
-                    df["is_cash_out"] == 1
-                )
-            )
-        ).astype(int)
-
-        # Time feature.
-        df["step_mod_24"] = (
-            df["step"] % 24
-        )
-
-        # Transfer/cash-out indicator.
-        df["transfer_or_cashout"] = (
-            (
-                df["is_transfer"] == 1
-            )
-            | (
-                df["is_cash_out"] == 1
-            )
-        ).astype(int)
-
-        # Large transfer/cash-out indicator.
-        df["large_transfer_or_cashout"] = (
-            (
-                df["is_large_transaction"] == 1
-            )
-            & (
-                df["transfer_or_cashout"] == 1
-            )
-        ).astype(int)
-
-        return df
-
     def prepare_transaction(
         self,
         transaction: dict,
@@ -348,8 +179,27 @@ class FraudModelService:
             transaction
         )
 
-        df = self._engineer_transaction_features(
-            df
+        # The shared pipelines expect the full processed schema. The
+        # target and flag are unused by the model (excluded below) but
+        # are required placeholders for the shared validation.
+        df["isFraud"] = 0
+        df["isFlaggedFraud"] = 0
+
+        # Processed-stage features (balance changes/errors, zero-balance
+        # and type indicators, ratios, log amount).
+        df = engineer_processed_features(df)
+
+        # Behavioural features; use the persisted training quantiles so a
+        # single transaction is scored against the same thresholds the
+        # model was trained with.
+        df = engineer_behavioural_features(
+            df,
+            large_amount_threshold=(
+                self.inference_thresholds["large_transaction_amount"]
+            ),
+            late_step_threshold=(
+                self.inference_thresholds["late_step"]
+            ),
         )
 
         model_features = get_model_features(
@@ -399,4 +249,4 @@ class FraudModelService:
         return {
             "prediction": prediction,
             "fraud_probability": probability,
-        }
+        }

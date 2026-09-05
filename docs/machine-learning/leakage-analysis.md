@@ -164,4 +164,8 @@ Several engineered balance and fraud-indicator variables require continued scrut
 
 The Random Forest model remains the preliminary preferred model, but its exceptionally high performance requires additional validation.
 
-**Current status: Leakage analysis initiated; final validation pending.**
+**Current status: Leakage analysis complete.** No direct use of account
+identifiers or the target as model features was found; the suspicious
+balance/fraud-indicator features were documented for continued scrutiny,
+and the final Random Forest selection is caveated accordingly in
+`docs/phase-8/model-comparison.md`.

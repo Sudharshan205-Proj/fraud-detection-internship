@@ -39,7 +39,13 @@ for post-hoc analytical validation only.
 | Model | Precision | Recall | F1-score | ROC-AUC |
 |---|---:|---:|---:|---:|
 | Isolation Forest | 0.035260 | 0.270237 | 0.062381 | 0.893615 |
-| Autoencoder | 0.089292 | 0.742544 | 0.159415 | 0.941359 |
+| Autoencoder | 0.085778 | 0.722459 | 0.153349 | 0.943997 |
+
+These are the verified values carried into the Phase 8 comparison
+(identical to `results/model_comparison/model_comparison.csv`). The
+autoencoder is a neural network, so its metrics vary slightly between
+runs due to weight initialization; the recorded values come from the
+verified full-dataset run.
 
 Interpretation: both approaches detect fraud at lower precision than the
 supervised Random Forest, but demonstrate genuine anomaly-detection

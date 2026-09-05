@@ -9,15 +9,11 @@ priority.
 
 ## Status
 
-**In progress** — matches the project-status table in the README. The
-model-training and service pieces exist and are tested; the Streamlit
-UI is scaffolded but not yet runnable because a small amount of
-wiring remains (see "Remaining Work").
+**Complete** — matches the project-status table in the README. The
+model-training, inference service, and Streamlit UI are implemented,
+tested, and runnable.
 
-## What Exists
-
-The application code lives in the primary project folder (currently
-untracked — it has not been committed yet):
+## What Was Produced
 
 - **`app/model_service.py`** — `FraudModelService`:
 
@@ -25,10 +21,15 @@ untracked — it has not been committed yet):
     `models/model_features.json`
   - validates that the model's expected feature count matches the
     persisted 33-feature schema
-  - replicates the processed and behavioural feature engineering for a
-    single transaction (balance changes/errors, zero-balance and type
-    indicators, log/ratio features, threshold-based flags using the
-    persisted `inference_thresholds`)
+  - rebuilds the processed and behavioural feature engineering for a
+    single transaction by reusing the shared pipeline modules
+    (`src.data_processing.process_data.engineer_features` and
+    `src.feature_engineering.features.engineer_features`), so the
+    application cannot drift from the training-time definitions. The
+    dataset-level thresholds used by the behavioural features
+    (`is_large_transaction`, `is_late_step`) come from the persisted
+    `inference_thresholds` rather than being recomputed from the
+    single input row
   - `prepare_transaction` → exact 33-feature matrix; `predict` →
     `{"prediction": 0|1, "fraud_probability": float}`
 
@@ -39,11 +40,11 @@ untracked — it has not been committed yet):
 - **`app/streamlit_app.py`** — Streamlit UI: transaction inputs
   (type, amount, step, balances), cached model loading, result metrics
   (fraud probability, prediction, investigation priority) and
-  interpretation text. The UI currently imports module-level glue
-  functions that are not yet defined (see below).
+  interpretation text.
 
-- **`tests/app/`** — `test_model_service.py` and `test_utils.py`
-  exercising the service class and priority helpers.
+- **`tests/app/`** — `test_model_service.py`, `test_streamlit_app.py`
+  and `test_utils.py` exercising the service class, the UI module, and
+  the priority helpers.
 
 - **Final-model training** — `src/machine_learning/train_final_model.py`:
   trains the final Random Forest on the full processed dataset and saves
@@ -51,19 +52,7 @@ untracked — it has not been committed yet):
   inference thresholds (`large_transaction_amount` = 0.99 quantile of
   amount, `late_step` = 0.90 quantile of step) to `models/`.
 
-## Remaining Work
-
-- `app/streamlit_app.py` imports `load_model` and `predict_transaction`
-  from `app.model_service` and `get_prediction_message` from
-  `app.utils`; those module-level glue functions are not defined yet
-  (`model_service.py` currently exposes the `FraudModelService` class,
-  and `utils.py` lacks `get_prediction_message`). Until they are added,
-  `streamlit run` will fail on import.
-- The `app/`, `models/`, and `tests/app/` files need to be committed.
-- `train_final_model.py` requires the full processed dataset and several
-  minutes of training before the model artifacts exist.
-
-## How to Reproduce (once wiring is complete)
+## How to Reproduce
 
 ```bash
 # 1. Train and export the final model (requires the processed dataset)
@@ -75,7 +64,7 @@ python -m streamlit run app/streamlit_app.py
 
 ## Related Documentation
 
-- `docs/phase-8/model-comparison.md` — why Random Forest was selected
+- `docs/application/application-overview.md` — application architecture
 - `docs/phase-9/explainability-and-fraud-investigation.md` — the priority
   semantics reused by the app
 - `docs/phase-13/deployment.md` — how the app is intended to be deployed

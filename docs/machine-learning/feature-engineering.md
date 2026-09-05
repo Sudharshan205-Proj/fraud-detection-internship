@@ -73,11 +73,12 @@ Model preprocessing, resampling, and transformations that learn parameters from 
 
 ## 8. Output
 
-The resulting dataset is saved locally as:
-
-`data/processed/feature_engineered_transactions.csv`
-
-Generated datasets remain excluded from Git because of their size.
+The 36-column feature-engineered frame is produced in memory by the
+feature-engineering module and consumed directly by the machine-learning
+entry points and the application inference service. It is not written
+back to disk as a separate CSV — the on-disk processed dataset remains
+`data/processed/paysim_processed.csv` (24 columns) and the engineered
+frame is rebuilt deterministically from it by each consumer.
 
 ## 9. Validation
 
@@ -99,7 +100,7 @@ The tests verify:
 
 The feature-engineered dataset will be used in the machine-learning preparation stage.
 
-The next stage will address:
+The next stage addresses:
 
 - train/test splitting;
 - categorical encoding;
@@ -108,3 +109,6 @@ The next stage will address:
 - SMOTE on training data only;
 - baseline models;
 - fraud classification and anomaly detection.
+
+**Status: Complete** — the engineered features are used by the Phase 5
+preparation, Phase 6/10 training, and Phase 10 inference service.

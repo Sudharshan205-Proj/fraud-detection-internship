@@ -8,12 +8,11 @@ transactions for analyst review.
 
 ## Status
 
-**Implemented** — feature-importance analysis, permutation-importance
+**Complete** — feature-importance analysis, permutation-importance
 support, and the transaction-investigation workflow are complete
-(see `docs/machine-learning/model-explainability.md`). The project-status
-table in the README tracks this phase as **Verification**: the committed
-artifacts below were produced from verified runs and are regenerated
-locally when the scripts run against the full dataset.
+(see `docs/machine-learning/model-explainability.md`). The committed
+artifacts below were produced from verified full-dataset runs and are
+regenerated locally when the scripts run against the full dataset.
 
 ## What Was Produced
 

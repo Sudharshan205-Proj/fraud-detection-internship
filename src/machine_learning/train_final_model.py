@@ -23,9 +23,11 @@ from src.machine_learning.prepare import (
     train_test_split_data,
 )
 
-DATA_PATH = Path("data/processed/paysim_processed.csv")
-MODEL_PATH = Path("models/random_forest_model.joblib")
-FEATURE_SCHEMA_PATH = Path("models/model_features.json")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+DATA_PATH = PROJECT_ROOT / "data" / "processed" / "paysim_processed.csv"
+MODEL_PATH = PROJECT_ROOT / "models" / "random_forest_model.joblib"
+FEATURE_SCHEMA_PATH = PROJECT_ROOT / "models" / "model_features.json"
 
 
 def load_and_prepare_data():
@@ -65,6 +67,7 @@ def load_and_prepare_data():
     print(f"Legitimate transactions: {int((y == 0).sum())}")
 
     return X, y, feature_columns, df
+
 
 def train_final_model():
     """

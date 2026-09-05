@@ -25,8 +25,6 @@ leakage.
 
   - `identify_identifier_columns` / `identify_suspicious_features` /
     `calculate_target_correlations` — pre-modelling feature scrutiny
-  - `train_validation_random_forest` — cross-validated Random Forest
-    checks using the canonical model configuration
 
 - **Leakage rules enforced in this phase:**
 

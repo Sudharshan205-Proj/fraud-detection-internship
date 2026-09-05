@@ -1,3 +1,10 @@
+"""
+Supervised model evaluation helpers.
+
+Provides a single entry point for scoring fitted binary classifiers
+with the fraud-detection metric set shared across the project.
+"""
+
 from src.machine_learning.metrics import classification_metrics
 
 

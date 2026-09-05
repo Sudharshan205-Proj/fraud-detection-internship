@@ -159,3 +159,9 @@ data/*.sqlite3
 !reports/
 !reports/figures/
 !reports/figures/*.png
+
+# ============================================================
+# Tableau temporary/backup files
+# ============================================================
+
+~*.*

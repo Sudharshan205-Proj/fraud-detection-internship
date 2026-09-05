@@ -81,7 +81,79 @@ The expected final model feature count is:
 
 **33 features**
 
-The model artifact is:
+The model artifacts are:
 
 ```text
 models/random_forest_model.joblib
+models/model_features.json
+```
+
+---
+
+## 6. Application Validation
+
+The Phase 10 application is validated for:
+
+- All five transaction types produce a valid prediction
+- Predictions are binary integers (0 or 1)
+- Fraud probability is a float between 0 and 1
+- Required result fields (`prediction`, `fraud_probability`) exist
+- Investigation-priority mapping covers Low / Moderate / High / Critical
+- Priority descriptions exist for every level
+- Out-of-range probabilities are rejected
+- Missing transaction fields are rejected with a clear error
+- The Streamlit module imports successfully
+
+---
+
+## 7. Reproducibility Validation
+
+Reproducibility is validated by:
+
+- Stratified splits with a fixed random state produce identical
+  train/test partitions
+- Train and test indices never overlap
+- The fraud target is never used as a model feature
+- The persisted feature schema records the project's fixed random seed
+- The final model exposes exactly 33 features
+
+---
+
+## 8. Deployment Validation
+
+Deployment artifacts are validated by:
+
+- The model artifact exists and is non-empty
+- The model can be loaded with `joblib`
+- The model expects exactly 33 features
+- The feature schema exists and is valid JSON
+- The schema contains the 33-feature list and both inference
+  thresholds (`large_transaction_amount`, `late_step`)
+- The Streamlit app, model service, and utility modules exist
+- `requirements.txt` declares streamlit, pandas, numpy, joblib, and
+  scikit-learn
+
+---
+
+## 9. Running the Validation Suite
+
+```bash
+python -m pytest tests/validation -q
+```
+
+The full project suite (including the Phase 12 validation area) runs
+with:
+
+```bash
+python -m pytest
+```
+
+All tests are dataset-free: they use small synthetic PaySim-style
+frames or inspect committed artifacts, so the suite runs in a fresh
+checkout without the 6.3M-row dataset.
+
+---
+
+## 10. Status
+
+Phase 12 testing and validation: **Complete**

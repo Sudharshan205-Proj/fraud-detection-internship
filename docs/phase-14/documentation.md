@@ -8,9 +8,10 @@ curriculum evidence.
 
 ## Status
 
-**In progress** — this documentation set is being completed now. The
-README, architecture, testing, and final-report documents exist; the
-per-phase report set is the current work item.
+**Complete** — this documentation set is complete. The README,
+architecture, testing, per-phase reports (phases 1-16), topic docs,
+and final-report documents are all present and consistent with the
+current state of the repository.
 
 ## Documentation Inventory
 

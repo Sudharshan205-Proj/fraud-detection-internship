@@ -226,17 +226,26 @@ Phase 11 provides evidence for:
 
 ## Status
 
-Phase 11 is complete when:
+**Complete** — matches the project-status table in the README.
 
-- [ ] Visualization datasets have been generated
-- [ ] Python visualizations have been generated
-- [ ] R analysis has been executed
-- [ ] R visualizations have been generated
-- [ ] R Markdown report has been knitted successfully
-- [ ] Tableau dashboard has been created
-- [ ] Tableau dashboard has been tested
-- [ ] Tableau dashboard has been published
-- [ ] Tableau workbook has been saved
-- [ ] Dashboard screenshot has been captured if required
-- [ ] Documentation has been completed
-- [ ] Git status has been reviewed
+Phase 11 checklist:
+
+- [x] Visualization datasets have been generated
+  (`python scripts/generate_visualization_data.py` — full dataset,
+  chunked)
+- [x] Python visualizations have been generated
+  (`python scripts/create_visualizations.py`)
+- [x] R analysis has been executed (`Rscript r/fraud_analysis.R`)
+- [x] R visualizations have been generated
+  (`Rscript r/fraud_visualization.R`)
+- [x] R Markdown report has been knitted successfully
+  (`r/fraud_analysis.html`)
+- [x] Tableau dashboard has been created
+  (`tableau/fraud_detection_dashboard.twbx`)
+- [x] Tableau dashboard has been tested
+- [x] Tableau dashboard has been published
+  (see the Public URL in `tableau/README.md`)
+- [x] Tableau workbook has been saved
+- [x] Dashboard screenshot has been captured if required
+- [x] Documentation has been completed
+- [x] Git status has been reviewed

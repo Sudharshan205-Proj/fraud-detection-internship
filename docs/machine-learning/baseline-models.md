@@ -53,27 +53,29 @@ Accuracy is not treated as the primary metric because the dataset is highly imba
 
 ## 6. Logistic Regression Results
 
-Record the actual results produced by the baseline training script here.
+Verified results from the full-dataset baseline training run
+(`scripts/train_baseline.py`):
 
 | Metric | Result |
 |---|---:|
-| Accuracy | |
-| Precision | |
-| Recall | |
-| F1-score | |
-| ROC-AUC | |
+| Accuracy | 0.967201 |
+| Precision | 0.034137 |
+| Recall | 0.894096 |
+| F1-score | 0.065762 |
+| ROC-AUC | 0.984229 |
 
 ## 7. Random Forest Results
 
-Record the actual results produced by the baseline training script here.
+Verified results from the full-dataset baseline training run
+(`scripts/train_baseline.py`):
 
 | Metric | Result |
 |---|---:|
-| Accuracy | |
-| Precision | |
-| Recall | |
-| F1-score | |
-| ROC-AUC | |
+| Accuracy | 0.999995 |
+| Precision | 0.998781 |
+| Recall | 0.997565 |
+| F1-score | 0.998173 |
+| ROC-AUC | 0.999087 |
 
 ## 8. Initial Comparison
 
@@ -94,3 +96,9 @@ Further modelling stages will investigate class imbalance treatment, anomaly det
 ## 10. Status
 
 Baseline machine-learning implementation: Complete.
+
+Baseline evaluation results recorded: Complete.
+
+Further modelling stages (imbalance treatment, anomaly detection,
+model tuning, final model selection) are covered in the Phase 6-9
+documents.

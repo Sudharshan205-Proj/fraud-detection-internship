@@ -109,7 +109,8 @@ These concepts will be demonstrated during the initial fraud-detection case-stud
 
 ## Status
 
-⬜ Not Started
+🟩 Implemented — evidence: `docs/phase-0/project-requirements.md`,
+`docs/final/project-overview.md`, and the final case study.
 
 ---
 
@@ -171,7 +172,9 @@ The fraud project naturally demonstrates multiple problem types:
 
 ## Status
 
-⬜ Not Started
+🟩 Implemented — evidence: SMART analytical questions in
+`docs/phase-0/project-requirements.md` §6 and the case-study framing in
+`docs/final/`.
 
 ---
 
@@ -274,7 +277,9 @@ The project will document:
 
 ## Status
 
-⬜ Not Started
+🟩 Implemented — evidence: `docs/data/` (dictionary, quality report,
+processing report), `src/data_processing/`, `.gitignore`, and the
+SQLite database workflow.
 
 ---
 
@@ -358,7 +363,10 @@ The PaySim dataset will undergo documented data-quality and preparation checks b
 
 ## Status
 
-⬜ Not Started
+🟩 Implemented — evidence: `src/data_processing/process_data.py`, the
+processing report (`docs/data/processing-report.md`), the validation
+queries in `sql/08_validation.sql`, and the dataset-free processing
+tests.
 
 ---
 
@@ -439,7 +447,8 @@ sql/
 
 ## Status
 
-⬜ Not Started
+🟩 Implemented — evidence: `sql/` scripts, `src/sql_analysis/`, and the
+SQL workflow documentation in `docs/sql/sql-analysis.md`.
 
 ---
 
@@ -517,7 +526,9 @@ The course emphasizes presentation structure, MEANLESS, audience engagement, acc
 
 ## Status
 
-⬜ Not Started
+🟩 Implemented — evidence: `reports/figures/`, `tableau/` workbook and
+README, `docs/phase-11/data-storytelling.md`, and the Phase 11
+visualization-and-Tableau report.
 
 ---
 
@@ -565,7 +576,9 @@ r/
 
 ## Status
 
-⬜ Not Started
+🟩 Implemented — evidence: `r/fraud_analysis.R`,
+`r/fraud_visualization.R`, `r/fraud_analysis.Rmd`, and the knitted
+`r/fraud_analysis.html`.
 
 ---
 
@@ -616,7 +629,8 @@ The machine-learning models are an important component, but not the entirety of 
 
 ## Status
 
-⬜ Not Started
+🟩 Implemented — evidence: complete repository, `docs/final/` case-study
+reports, per-phase documentation, and the deployed application.
 
 ---
 
@@ -639,7 +653,9 @@ The following requirements come from the fraud-detection project specification r
 | Confusion matrix                      | Model evaluation                                        |
 | Model comparison                      | Compare classification and anomaly-detection approaches |
 
-Status: ⬜ Not Started
+Status: 🟩 Implemented — evidence: `src/machine_learning/`,
+`src/anomaly_detection/`, `docs/machine-learning/`, and the Phase 8
+comparison report.
 
 ---
 
@@ -659,7 +675,8 @@ These are project-development requirements rather than claims about course conte
 | Reproducibility      | Requirements/environment documentation |
 | Project organization | Structured repository                  |
 
-Status: ⬜ Not Started
+Status: 🟩 Implemented — evidence: Git history, `tests/`, `app/`,
+`docs/`, and `pyproject.toml` / `requirements.txt`.
 
 ---
 
@@ -669,41 +686,51 @@ The final project will maintain evidence for every major curriculum area.
 
 | Curriculum Area            | Evidence                     | Status |
 | -------------------------- | ---------------------------- | ------ |
-| Data analytics foundations | Methodology documentation    | ⬜      |
-| Analytical thinking        | Analytical questions         | ⬜      |
-| Problem definition         | Problem statement            | ⬜      |
-| SMART questions            | Analytical-question document | ⬜      |
-| Data collection            | Dataset documentation        | ⬜      |
-| Data sources               | Dataset-source documentation | ⬜      |
-| Data types                 | Data dictionary              | ⬜      |
-| Metadata                   | Dataset documentation        | ⬜      |
-| Data quality               | Quality report               | ⬜      |
-| Data cleaning              | Python/SQL analysis          | ⬜      |
-| Data validation            | Validation scripts           | ⬜      |
-| Data ethics                | Ethics documentation         | ⬜      |
-| Data privacy               | Privacy documentation        | ⬜      |
-| Data security              | Data-handling procedures     | ⬜      |
-| Spreadsheets               | Excel analysis               | ⬜      |
-| SQL                        | SQLite queries               | ⬜      |
-| Python                     | Analysis/model code          | ⬜      |
-| R                          | R analysis                   | ⬜      |
-| RStudio                    | R project                    | ⬜      |
-| R Markdown                 | `.Rmd` report                | ⬜      |
-| Data visualization         | Python/R/Tableau             | ⬜      |
-| Tableau                    | Tableau dashboard            | ⬜      |
-| Data storytelling          | Final case study             | ⬜      |
-| Presentation               | Final presentation           | ⬜      |
-| Case-study methodology     | End-to-end project           | ⬜      |
-| Classification             | ML model                     | ⬜      |
-| SMOTE                      | ML preprocessing             | ⬜      |
-| Isolation Forest           | Anomaly model                | ⬜      |
-| Autoencoder                | Anomaly model                | ⬜      |
-| Model evaluation           | Metrics                      | ⬜      |
-| Model comparison           | Comparison report            | ⬜      |
-| Documentation              | Repository documentation     | ⬜      |
-| Version control            | Git/GitHub history           | ⬜      |
-| Testing                    | Test suite                   | ⬜      |
-| Deployment                 | Deployed application         | ⬜      |
+| Data analytics foundations | Methodology documentation    | 🟩      |
+| Analytical thinking        | Analytical questions         | 🟩      |
+| Problem definition         | Problem statement            | 🟩      |
+| SMART questions            | Analytical-question document | 🟩      |
+| Data collection            | Dataset documentation        | 🟩      |
+| Data sources               | Dataset-source documentation | 🟩      |
+| Data types                 | Data dictionary              | 🟩      |
+| Metadata                   | Dataset documentation        | 🟩      |
+| Data quality               | Quality report               | 🟩      |
+| Data cleaning              | Python/SQL analysis          | 🟩      |
+| Data validation            | Validation scripts           | 🟩      |
+| Data ethics                | Ethics documentation         | 🟩      |
+| Data privacy               | Privacy documentation        | 🟩      |
+| Data security              | Data-handling procedures     | 🟩      |
+| Spreadsheets               | Excel analysis               | ❌      |
+| SQL                        | SQLite queries               | 🟩      |
+| Python                     | Analysis/model code          | 🟩      |
+| R                          | R analysis                   | 🟩      |
+| RStudio                    | R project                    | 🟩      |
+| R Markdown                 | `.Rmd` report                | 🟩      |
+| Data visualization         | Python/R/Tableau             | 🟩      |
+| Tableau                    | Tableau dashboard            | 🟩      |
+| Data storytelling          | Final case study             | 🟩      |
+| Presentation               | Final presentation           | 🟨      |
+| Case-study methodology     | End-to-end project           | 🟩      |
+| Classification             | ML model                     | 🟩      |
+| SMOTE                      | ML preprocessing             | 🟩      |
+| Isolation Forest           | Anomaly model                | 🟩      |
+| Autoencoder                | Anomaly model                | 🟩      |
+| Model evaluation           | Metrics                      | 🟩      |
+| Model comparison           | Comparison report            | 🟩      |
+| Documentation              | Repository documentation     | 🟩      |
+| Version control            | Git/GitHub history           | 🟩      |
+| Testing                    | Test suite                   | 🟩      |
+| Deployment                 | Deployed application         | 🟩      |
+
+Status notes:
+
+* **Spreadsheets (❌)** — reviewed and determined genuinely not
+  applicable to this repository: no standalone spreadsheet artifact
+  exists. The spreadsheet concepts (sorting, filtering, formulas,
+  aggregation) are demonstrated through the equivalent Python, SQL,
+  and R analyses instead.
+* **Presentation (🟨)** — the written final reports exist under
+  `docs/final/`; the presentation deck is still pending in Phase 15.
 
 ---
 
@@ -727,14 +754,14 @@ The final audit must contain no unexplained curriculum gaps.
 
 # 16. Overall Status
 
-At the beginning of Phase 0:
+**Curriculum mapping:** 🟩 Audited — phases 0-14 are complete and the
+evidence matrix above reflects implemented project evidence. Two items
+remain open:
 
-**Curriculum mapping:** ⬜ Template
+* Spreadsheets (❌ Not Applicable — no spreadsheet artifact; equivalent
+  techniques demonstrated in Python/SQL/R).
+* Presentation (🟨 Partially Implemented — reports written; deck pending
+  in Phase 15).
 
-After this document is committed:
-
-**Curriculum mapping:** 🟩 Audited and planned
-
-However, individual curriculum items remain ⬜ until their actual project evidence is produced.
-
-This distinction will be maintained throughout development.
+Phase 15 and 16 will resolve the remaining items before final
+submission.

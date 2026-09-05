@@ -59,7 +59,11 @@ def _validate_input_columns(df: pd.DataFrame) -> None:
         )
 
 
-def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
+def engineer_features(
+    df: pd.DataFrame,
+    large_amount_threshold: float | None = None,
+    late_step_threshold: float | None = None,
+) -> pd.DataFrame:
     """
     Create additional fraud-detection features.
 
@@ -71,6 +75,14 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     ----------
     df:
         Processed PaySim DataFrame (24 columns).
+    large_amount_threshold:
+        Optional pre-computed 0.99 amount quantile. When omitted it is
+        derived from ``df``; pass the persisted training quantile when
+        engineering a single transaction so inference matches training.
+    late_step_threshold:
+        Optional pre-computed 0.90 step quantile. When omitted it is
+        derived from ``df``; pass the persisted training quantile when
+        engineering a single transaction so inference matches training.
 
     Returns
     -------
@@ -137,9 +149,13 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     # Transaction characteristics
     # ------------------------------------------------------------
 
-    # Full-column thresholds computed once and reused below.
-    large_amount_threshold = df["amount"].quantile(0.99)
-    late_step_threshold = df["step"].quantile(0.90)
+    # Full-column thresholds computed once and reused below (or supplied
+    # by the caller, e.g. the application using persisted training values).
+    if large_amount_threshold is None:
+        large_amount_threshold = df["amount"].quantile(0.99)
+
+    if late_step_threshold is None:
+        late_step_threshold = df["step"].quantile(0.90)
 
     # TRANSFER/CASH_OUT activity reused by several indicators.
     withdrawal_activity = (

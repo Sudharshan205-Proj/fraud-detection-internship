@@ -129,4 +129,6 @@ Before deployment, the selected model should undergo:
 
 **Model optimization: Complete**
 
-**Production deployment: Pending**
+**Production deployment: Complete** (Phase 13 — see
+`docs/phase-13/deployment.md`; deployment is an internship-level
+Streamlit deployment, not a production banking system)
