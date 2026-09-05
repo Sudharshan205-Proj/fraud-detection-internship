@@ -6,11 +6,9 @@ import os
 import sys
 
 import streamlit as st
-from model_service import FraudModelService
-from utils import (
-    get_investigation_priority,
-    get_priority_description,
-)
+
+import app
+from app.utils import get_investigation_priority, get_priority_description
 
 # Automatically find and add the root repository directory to the Python path
 # to resolve the 'ModuleNotFoundError: No module named app' error.
@@ -29,7 +27,7 @@ st.set_page_config(
 @st.cache_resource
 def get_model_service():
     """Load and cache the fraud detection model service."""
-    return FraudModelService()
+    return app.model_service.FraudModelService()
 
 
 def main():
