@@ -14,9 +14,8 @@ from the persisted inference schema rather than recomputed from a
 single transaction.
 """
 
-from __future__ import annotations
-
 import json
+import sys
 from pathlib import Path
 
 import joblib
@@ -29,6 +28,14 @@ from src.feature_engineering.features import (
     engineer_features as engineer_behavioural_features,
 )
 from src.feature_engineering.features import get_model_features
+
+# Add project root to Python path
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.append(str(ROOT))
+
+from __future__ import annotations  # noqa: F404
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -249,4 +256,4 @@ class FraudModelService:
         return {
             "prediction": prediction,
             "fraud_probability": probability,
-        }
+        }
