@@ -100,3 +100,5 @@ Deployment documentation: Complete
 
 Runtime verification (local `streamlit run`) is included in the
 Phase 12 manual validation checklist.
+
+Public deployment: https://fraud-detection-internship.streamlit.app/
